@@ -1,4 +1,5 @@
   #sam abernethy compton macro, May 31 2016 
+  #working on active target a2geant simulations
   
   #choose a physics list from /A2/physics/ListPhysics
   /A2/physics/Physics QGSP_BIC
