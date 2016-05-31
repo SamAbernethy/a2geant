@@ -26,18 +26,19 @@
 
 /A2/det/useTOF 0
 /A2/det/setTOFFile TOF.par
-##Set the target
-/A2/det/useTarget Cryo
+
+##Set the target (cryo or solid or polarized)
+#/A2/det/useTarget Cryo
 ###Cryo targets : G4_lH2, A2_lD2###
-/A2/det/targetMaterial G4_lH2
-/A2/det/setTargetLength 5 cm
+#/A2/det/targetMaterial G4_lH2
+#/A2/det/setTargetLength 5 cm
 ####Solid targets : G4_Li, G4_GRAPHITE, G4_Ca, G4_Pb###
 #/A2/det/useTarget Solid
 #/A2/det/targetMaterial G4_Pb
 #/A2/det/targetMaterial G4_GRAPHITE
 #####Polarised target
-#/A2/det/useTarget Polarized
-#/A2/det/targetMaterial A2_HeButanol
-#/A2/det/targetMagneticCoils Solenoidal
+/A2/det/useTarget Polarized
+/A2/det/targetMaterial A2_HeButanol
+/A2/det/targetMagneticCoils Solenoidal
 #/A2/det/targetMagneticCoils Saddle
-#/A2/det/setTargetMagneticFieldMap wouter_field_map.dat
+/A2/det/setTargetMagneticFieldMap wouter_field_map.dat

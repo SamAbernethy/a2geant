@@ -11,11 +11,6 @@
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 
-// Sam Abernethy, June 2016
-// Changing A2PolarizedTarget to include the possibility to build active target
-// Old version of Polarized target is in 'A2NotActivePolarizedTarget.cc'
-
-
 A2PolarizedTarget::A2PolarizedTarget()
 {
   fMagneticField = NULL;
