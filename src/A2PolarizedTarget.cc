@@ -15,7 +15,45 @@
 // Changing A2PolarizedTarget to include the possibility to build active target
 // Old version of Polarized target is in 'A2NotActivePolarizedTarget.cc'
 
+/* Stucture of A2PolarizedTarget.cc
+ * First, a load of .hh header files are included which initialize everything.
+ * Magnetic field is defined in fMagneticField, and SetMagneticField void function.
+ *
+ * Construct the target:
+ * Defined in terms of l_TRGT, r_TRGT and is then used in G4Tubs as "MyShape." This is then used to make a G4LogicalVolume, and then placed in a location.
+ * Colors for viasualization are all set.
+ *
+ * Construct the cylinders from outside in:
+ * Outer stainless steel given length, radius, thickness, G4Tubs, Volume, placement, visual attributes.
+ * Outer copper cylinder given the same.
+ *
+ * TypeMagneticCoils from DetectorSetup.mac can either be Solenoidal or Saddle:
+ * If Solenoidal:
+ * NiTi layer construct a l/r/t for NbTiC, G4Tubs, volume, placement
+ * Cu layer construct the same, as well as epoxy.
+ *
+ * If Saddle:
+ * construct dimensions in terms of x, y, z instead of cylindrical
+ * Box-splitter, tube1, box1 constructed in two layers.
+ * What is G4SubtractionSolid???
+ *
+ * Coils are wrapped around copper cylinder with three thicknesses. All are defined in the same way.
+ *
+ * Inner stainless steel cylinder with two thicknesses. Also defined the same.
+ * Inner copper cylinder with four thicknesses, same deal.
+ *
+ * Kapton outside cell is defined in 4 parts.
+ * Target cell, butanol, 60% filling is defined.
+ * He between SS and Cu cylinders is defined in 6 parts.
+ * Outer Ti window, Cu ring around window, outer Al window, inner Al window, Cu bit between coils and inner Al window defined, middle Ti window, SS ring, inner Ti window.
+ *
+ * return fMyPhysi;
+ *
+ * */
 
+
+
+// sam - Magnetic field stuff
 A2PolarizedTarget::A2PolarizedTarget()
 {
   fMagneticField = NULL;
@@ -25,6 +63,7 @@ A2PolarizedTarget::~A2PolarizedTarget()
   if(fMagneticField) delete fMagneticField;
 }
 
+// sam - function that sets the magnetic field
 void A2PolarizedTarget::SetMagneticField(G4String &nameFileFieldMap)
 {
   // If nameFileFieldMap is a NULL string then do not set the target magnetic field
@@ -48,6 +87,7 @@ void A2PolarizedTarget::SetMagneticField(G4String &nameFileFieldMap)
   }
 }
 
+// sam - main function that constructs the volumes
 G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
 {
 
@@ -82,6 +122,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
  fMyPhysi=new G4PVPlacement(0,G4ThreeVector(0,0, - 20.0*mm/2 - 11.5*mm - 231.5*mm + l_TRGT/2.),fMyLogic,"TRGT",fMotherLogic,false,1);
  fMyLogic->SetVisAttributes (G4VisAttributes::Invisible);
 
+ // sam - colors for the visualization which can be changed here
  //Colours with thier corresponding materials used in the visualization:
  G4VisAttributes* SSVisAtt= new G4VisAttributes(G4Colour(0.8,0.8,0.8)); //stainless steel (grey)
  G4VisAttributes* CUVisAtt= new G4VisAttributes(G4Colour(0.8,0.6,0.2)); //copper (brown)
