@@ -48,12 +48,75 @@
  * Outer Ti window, Cu ring around window, outer Al window, inner Al window, Cu bit between coils and inner Al window defined, middle Ti window, SS ring, inner Ti window.
  *
  * return fMyPhysi;
- *
  * */
 
+/* Volumes included in old Polarized Target:
+ * "Mother" Air volume
+ * Outer SS cylinder
+ * Outer Cu cylinder
+ * Solenoidal magnetic coils: NbTi, Cu, epoxy
+ * Saddle magnetic coils: NbTi, 2 layers
+ * Middle Cu cylinder, 3 thicknesses
+ * Inner SS cylinder, 2 thicknesses
+ * Inner Cu cylinder, 4 parts
+ * Kapton cell, 4 parts
+ * Target cell, butanol
+ * He between inner SS and Cu cylinders, 6 parts
+ * Outer Ti window, with Cu ring
+ * Outer Al window
+ * Inner Al window
+ * Cu bit between coils and inner Al window, 2 parts
+ * Middle Ti window, with SS ring
+ * Inner Ti window
+ * */
 
+/* Materials in G4 vs. A2-specific:
+ * G4 -- AIR, Cu, KAPTON, Ti, Al
+ * A2 -- SS, NbTi, Epoxy, HeButanol, HeMix
+ * */
 
-// sam - Magnetic field stuff
+/* G4 classes used in this file:
+ * G4double -- simply a double.
+ * G4String -- simply a string
+ *
+ * G4VisAttributes(G4Colour(red, green, blue, opacity))
+ * red, green, blue on scale from 0 to 1
+ * opacity set to 1 but can be changed
+ *
+ * G4Tubs("Name", fRMin, fRMax, fDz, fSPhi, fDPhi) -- Tube/Cylinder
+ * fRMin = inner radius. If inner radius is 0, tube is filled cylinder.
+ * fRMax = outer radius
+ * fDz = half length along z-axis, along which it is centered
+ * fSPhi = starting phi angle (radians). 0 is +x axis, pi/2 is +y axis.
+ * fDPhi = delta angle (radians). 2pi is full cylinder.
+ *
+ * G4Box("Name", x, y, z) -- 3D Box
+ * x, y, z = half-lengths
+ *
+ * G4LogicalVolume(pSolid, pMaterial, "Name") -- Volume in G4
+ * pSolid = G4Tubs or G4Box for example -- shape or volume created
+ * pMaterial = material. Found in fNistManager->FindOrBuildMaterial("G4_XXX")
+ *
+ * G4PVPlacement(pRot, G4ThreeVector(x, y, z), G4LogicalVolume, "Name", pMotherLogical, pMany, pCopyNo) -- Location in Space
+ * pRot = volume rotated by pRot relative to pMotherLogical
+ * G4ThreeVector = volume trasnlated by it relative to pMotherLogical
+ * pMotherLogical = fMyLogic always, I think
+ * pMany = false. (It's used for overlapping, but currently not used.)
+ * pCopyNo = 1 for everything I can see
+ *
+ * G4SubtractionSolid("Name", pSolidA, pSolidB)
+ * pSolidA, pSolidB = G4Tubs or G4Box, for example -- shape or volume created
+ * Subtraction A - B, meaning B is subtracted from A.
+ * */
+
+/* Structure of most volumes constructed:
+ * Define length, radius, thickness
+ * Define G4Tubs
+ * Define G4LogicalVolume
+ * Define G4PVPlacement with use of G4ThreeVector
+ * SetVisAttributes
+ * */
+
 A2PolarizedTarget::A2PolarizedTarget()
 {
   fMagneticField = NULL;
@@ -63,7 +126,6 @@ A2PolarizedTarget::~A2PolarizedTarget()
   if(fMagneticField) delete fMagneticField;
 }
 
-// sam - function that sets the magnetic field
 void A2PolarizedTarget::SetMagneticField(G4String &nameFileFieldMap)
 {
   // If nameFileFieldMap is a NULL string then do not set the target magnetic field
@@ -87,7 +149,6 @@ void A2PolarizedTarget::SetMagneticField(G4String &nameFileFieldMap)
   }
 }
 
-// sam - main function that constructs the volumes
 G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
 {
 
@@ -122,7 +183,6 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
  fMyPhysi=new G4PVPlacement(0,G4ThreeVector(0,0, - 20.0*mm/2 - 11.5*mm - 231.5*mm + l_TRGT/2.),fMyLogic,"TRGT",fMotherLogic,false,1);
  fMyLogic->SetVisAttributes (G4VisAttributes::Invisible);
 
- // sam - colors for the visualization which can be changed here
  //Colours with thier corresponding materials used in the visualization:
  G4VisAttributes* SSVisAtt= new G4VisAttributes(G4Colour(0.8,0.8,0.8)); //stainless steel (grey)
  G4VisAttributes* CUVisAtt= new G4VisAttributes(G4Colour(0.8,0.6,0.2)); //copper (brown)
@@ -514,8 +574,6 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
  new G4PVPlacement(0,G4ThreeVector(0,0,(t_TIIW/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),TIIWLogic,"TIIW",fMyLogic,false,1);
  TIIWLogic->SetVisAttributes(BlueVisAtt);
 //  TIIWLogic->SetVisAttributes(G4VisAttributes::Invisible);
-
-
 
  return fMyPhysi;
 }
