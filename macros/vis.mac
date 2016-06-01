@@ -9,7 +9,6 @@
 ####Initialise
 /run/initialize
 
-
 #
 # Sets some default verbose
 #
@@ -27,11 +26,12 @@
 #
 # Use this open statement to get an .eps and .prim files
 # suitable for viewing in DAWN.
-#/vis/open DAWNFILE
+/vis/open DAWNFILE
 #
 # Use this open statement instead for OpenGL in immediate mode.
 #/vis/open OGLIXm
 #/vis/open RayTracer
+#/vis/open ATree
 #
 # Use this open statement instead to get a HepRep version 1 file
 # suitable for viewing in WIRED.
@@ -60,7 +60,7 @@
 # The second file will contain the detector plus one event.
 # The third file will contain the detector plus ten events.
 #/vis/open OGLI
-/vis/open OGL
+#/vis/open OGL
 #/vis/open OGLIX
 #/vis/open DAWNFILE
 #/vis/scene/create 

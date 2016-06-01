@@ -41,4 +41,4 @@
 /A2/det/targetMaterial A2_HeButanol
 /A2/det/targetMagneticCoils Solenoidal
 #/A2/det/targetMagneticCoils Saddle
-/A2/det/setTargetMagneticFieldMap wouter_field_map.dat
+#/A2/det/setTargetMagneticFieldMap wouter_field_map.dat
