@@ -1,3 +1,9 @@
+// Sam Abernethy, June 2016
+// Changing A2PolarizedTarget to include Active Target
+// Old version of Polarized Target is in 'A2NotActivePolarizedTarget.cc'
+// Plan: first, get the active target constructed by making volumes from Mike
+// Second, change the structure such that the input of Active vs. not active can be chosen in DetectorSetup.mac and then passed in as fMaterial
+
 #include "A2PolarizedTarget.hh"
 #include "G4Box.hh"
 #include "G4Tubs.hh"
@@ -11,46 +17,25 @@
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 
-// Sam Abernethy, June 2016
-// Changing A2PolarizedTarget to include the possibility to build active target
-// Old version of Polarized target is in 'A2NotActivePolarizedTarget.cc'
-
-/* Stucture of A2PolarizedTarget.cc
- * First, a load of .hh header files are included which initialize everything.
+/* ********************************* STRUCTURE OF A2POLARIZEDTARGET.CC ******************************
  * Magnetic field is defined in fMagneticField, and SetMagneticField void function.
+ * Mother Volume constructed.
  *
- * Construct the target:
- * Defined in terms of l_TRGT, r_TRGT and is then used in G4Tubs as "MyShape." This is then used to make a G4LogicalVolume, and then placed in a location.
- * Colors for viasualization are all set.
- *
- * Construct the cylinders from outside in:
- * Outer stainless steel given length, radius, thickness, G4Tubs, Volume, placement, visual attributes.
- * Outer copper cylinder given the same.
+ * All other Volumes constructed:
+ * Define length, radius, thickness (or x, y, z).
+ * Define G4Tubs/G4Box.
+ * Define G4LogicalVolume.
+ * Define G4PVPlacement with use of G4ThreeVector.
+ * SetVisAttributes.
  *
  * TypeMagneticCoils from DetectorSetup.mac can either be Solenoidal or Saddle:
- * If Solenoidal:
- * NiTi layer construct a l/r/t for NbTiC, G4Tubs, volume, placement
- * Cu layer construct the same, as well as epoxy.
+ * If Solenoidal, construct cylinders.
+ * If Saddle, construct boxes (and subtract them).
  *
- * If Saddle:
- * construct dimensions in terms of x, y, z instead of cylindrical
- * Box-splitter, tube1, box1 constructed in two layers.
- * What is G4SubtractionSolid???
- *
- * Coils are wrapped around copper cylinder with three thicknesses. All are defined in the same way.
- *
- * Inner stainless steel cylinder with two thicknesses. Also defined the same.
- * Inner copper cylinder with four thicknesses, same deal.
- *
- * Kapton outside cell is defined in 4 parts.
- * Target cell, butanol, 60% filling is defined.
- * He between SS and Cu cylinders is defined in 6 parts.
- * Outer Ti window, Cu ring around window, outer Al window, inner Al window, Cu bit between coils and inner Al window defined, middle Ti window, SS ring, inner Ti window.
- *
- * return fMyPhysi;
+ * Target cell, butanol, is defined (and hardcoded).
  * */
 
-/* Volumes included in old Polarized Target:
+/* ************************************** VOLUMES AND MATERIALS *************************************
  * "Mother" Air volume
  * Outer SS cylinder
  * Outer Cu cylinder
@@ -68,14 +53,15 @@
  * Cu bit between coils and inner Al window, 2 parts
  * Middle Ti window, with SS ring
  * Inner Ti window
- * */
-
-/* Materials in G4 vs. A2-specific:
+ *
+ * l = length, r = radius, t = thickness
+ * distances are HALF-LENGTHS
+ *
  * G4 -- AIR, Cu, KAPTON, Ti, Al
  * A2 -- SS, NbTi, Epoxy, HeButanol, HeMix
  * */
 
-/* G4 classes used in this file:
+/* ******************************************** CLASSES *********************************************
  * G4double -- simply a double.
  * G4String -- simply a string
  *
@@ -109,12 +95,16 @@
  * Subtraction A - B, meaning B is subtracted from A.
  * */
 
-/* Structure of most volumes constructed:
- * Define length, radius, thickness
- * Define G4Tubs
- * Define G4LogicalVolume
- * Define G4PVPlacement with use of G4ThreeVector
- * SetVisAttributes
+/* ***************************************** OTHER TARGETS ******************************************
+ * Cryo target -- They define all the doubles at the start
+ * Useful line: if (!fMaterial) give an error message
+ * Sphere: G4Sphere("Name", rmin, rmax, phimain, delatphi, thetamin, deltatheta)
+ * Options for LH2 or LD2 are imbedded into DetectorSetup.mac and then looked for within Cryo
+ *
+ * Solid target -- Useful line: if (!fMaterial) give an error message.
+ * if fMaterial is something, give it a length (4 options)
+ * Cone: G4Cons("Name", innerradius1, outerradius1, innerradius2, outerradius2, halflengthinz, startingphi, deltaphi)
+ * Target holder?
  * */
 
 A2PolarizedTarget::A2PolarizedTarget()
@@ -539,7 +529,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
 //  CUBALogic->SetVisAttributes(G4VisAttributes::Invisible);
  
  //Part B:
-  G4double l_CUBB = 3.18*mm;
+ G4double l_CUBB = 3.18*mm;
  G4double r_CUBB = 23.0*mm;
  G4double t_CUBB = 0.5*mm;
  G4Tubs* CUBB=new G4Tubs("CUBB",r_CUBB-t_CUBB,r_CUBB,l_CUBB/2,0*deg,360*deg);
