@@ -43,7 +43,6 @@
 #
 # Output an empty detector
 #/vis/viewer/flush
-
 #
 # for drawing the tracks
 # (if too many tracks cause core dump => storeTrajectory 0)
@@ -90,22 +89,22 @@
 #/gun/position 1 9.08 0
 #/gun/position 1 15.2 0
 
-#my own DAWN commands
+## DAWN commands
 /vis/open DAWNFILE
 
 ## To draw everything
 #/vis/drawVolume
 
-
 ## To draw individual parts
 /vis/scene/create
+#/vis/scene/add/volume CUO
+#/vis/scene/add/volume SSO
+#/vis/scene/add/volume Mock
+#/vis/scene/add/volume BTRGT
 
 ## To draw all of the target
 /vis/scene/add/volume TRGT
 
-#/vis/scene/add/volume CUO
-#/vis/scene/add/volume SSO
-#/vis/scene/add/volume Mock
 /vis/sceneHandler/attach
 
 ## Visual Aspects
@@ -116,4 +115,3 @@
 #/vis/scene/add/text 0 0 0 mm 40 -100 200 LogVol:CUMALogic
 /vis/viewer/refresh
 /vis/viewer/flush
-
