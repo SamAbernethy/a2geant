@@ -1,6 +1,22 @@
+#include "A2PolarizedTarget.hh"
+#include "G4Box.hh"
+#include "G4Tubs.hh"
+#include "G4Sphere.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4PVPlacement.hh"
+#include "G4LogicalVolume.hh"
+#include "G4ThreeVector.hh"
+#include "G4VisAttributes.hh"
+#include "A2MagneticField.hh"
+#include "G4FieldManager.hh"
+#include "G4TransportationManager.hh"
+
 // Sam Abernethy, June 2016
 // Changing A2PolarizedTarget to include Active Target
-// Old version of Polarized Target is in 'A2NotActivePolarizedTarget.cc'
+// Old version of A2PolarizedTarget.cc is in 'A2NotActivePolarizedTarget.cc'
+// Implementing boolean 'active' as true or false based on input target material
+// setting up (active == true) as standalone section
+// setting up (active == false) with kapton cell, butanol cell, Cu cylinders but not yet helium between cylinders!
 
 /* ********************************* STRUCTURE OF A2POLARIZEDTARGET.CC ******************************
  * Magnetic field is defined in fMagneticField, and SetMagneticField void function.
@@ -19,7 +35,6 @@
  *
  * Target cell, butanol, is defined (and hardcoded).
  * */
-
 /* ************************************** VOLUMES AND MATERIALS *************************************
  * "Mother" Air volume -- fMyLogic
  * Outer SS cylinder -- SSOLogic
@@ -47,7 +62,6 @@
  * G4 -- AIR, Cu, KAPTON, Ti, Al
  * A2 -- SS, NbTi, Epoxy, HeButanol, HeMix
  * */
-
 /* ******************************************** CLASSES *********************************************
  * G4VisAttributes(G4Colour(red, green, blue, opacity))
  * red, green, blue on scale from 0 to 1
@@ -78,7 +92,6 @@
  * pSolidA, pSolidB = G4Tubs or G4Box, for example -- shape or volume created
  * Subtraction A - B, meaning B is subtracted from A.
  * */
-
 /* ***************************************** OTHER TARGETS ******************************************
  * Cryo target -- G4Sphere("Name", rmin, rmax, phimain, delatphi, thetamin, deltatheta)
  * Options for LH2 or LD2 are imbedded into DetectorSetup.mac and then looked for within Cryo
@@ -101,7 +114,6 @@
  * In CryoTarget, LD2ALogic is made up of the material fMaterial
  *
  * */
-
 /* *************************************** ORIGINAL COMMENTS ****************************************
  * // Magnetic field moved from A2DetectorConstruction dglazier
  * static G4bool fieldIsInitialized = false;
@@ -116,19 +128,6 @@
  * When the tubes change thickness, there is no slope joining the different thicknesses.
  * When the ends of the tubes are rounded, this is approximated as a straight 90*degree cylinder.
  * l = length, r = radius, t = thickness.*/
-
-#include "A2PolarizedTarget.hh"
-#include "G4Box.hh"
-#include "G4Tubs.hh"
-#include "G4Sphere.hh"
-#include "G4SubtractionSolid.hh"
-#include "G4PVPlacement.hh"
-#include "G4LogicalVolume.hh"
-#include "G4ThreeVector.hh"
-#include "G4VisAttributes.hh"
-#include "A2MagneticField.hh"
-#include "G4FieldManager.hh"
-#include "G4TransportationManager.hh"
 
 A2PolarizedTarget::A2PolarizedTarget()
 {
@@ -165,6 +164,16 @@ void A2PolarizedTarget::SetMagneticField(G4String &nameFileFieldMap)
 G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
 
  //////////////////////////////////////////////////
+ /// Initialization of Target
+ //////////////////////////////////////////////////
+
+ G4bool active = false;
+ if (!fMaterial) {G4cerr << "No target material chosen. Please add in DetectorSetup.mac." << G4endl; exit(1);}
+ else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("A2_HeButanol")) {G4cout << "A2_HeButanol chosen." << G4endl;}
+ else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("G4_POLYSTYRENE")) {G4cout << "Active Target (G4_POLYSTYRENE) chosen." << G4endl; active = true;}
+ else {G4cerr << "Target material incorrectly chosen. Please change in DetectorSetup.mac." << G4endl; exit(1);}
+
+ //////////////////////////////////////////////////
  /// Construction of Mother Volume
  //////////////////////////////////////////////////
 
@@ -184,100 +193,186 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  // Colours with thier corresponding materials used in the visualization:
  G4VisAttributes* SSVisAtt= new G4VisAttributes(G4Colour(0.8,0.8,0.8)); // stainless steel (grey)
  G4VisAttributes* CUVisAtt= new G4VisAttributes(G4Colour(0.8,0.6,0.2)); // copper (brown)
- G4VisAttributes* CyanVisAtt= new G4VisAttributes(G4Colour(.5,.2,0.0)); // NbTi
+ G4VisAttributes* CyanVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0.0)); // NbTi
  G4VisAttributes* MagentaVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0)); // epoxy
  G4VisAttributes* BlueVisAtt= new G4VisAttributes(G4Colour(0.0,0.0,1.0)); // titanium
  G4VisAttributes* GreenVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,0.0)); // aluminum
  G4VisAttributes* RedVisAtt= new G4VisAttributes(G4Colour(1.0, 0.0, 0.0)); // kapton
  G4VisAttributes* WhiteVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0)); // helium
+ G4VisAttributes* PlexiVisAtt= new G4VisAttributes(G4Colour(1.0,1.0, 0.0)); // plexiglass
+ G4VisAttributes* BlackVisAtt= new G4VisAttributes(G4Colour(0.0,0.0,0.0)); // black
 
  //////////////////////////////////////////////////
  /// Active Target
  //////////////////////////////////////////////////
 
- if (!fMaterial) {G4cerr << "No target material chosen. Please add in DetectorSetup.mac." << G4endl; exit(1);}
- else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("A2_HeButanol")) {G4cout << "A2_HeButanol chosen." << G4endl;}
- else {G4cerr << "Target material incorrectly chosen. Please change in DetectorSetup.mac." << G4endl; exit(1);}
+ if (active == true) {
+     G4cout << "Implementing Active Target... " << G4endl;
 
- G4double mocklength = 100*mm;
+     // Plexiglass Tube
+     G4double l_PGTube = 215*mm - 67*mm; // from inner copper cylinder, part D
+     G4double r_PGTube = 12.5*mm; // diameter of 2.5 cm
+     G4double t_PGTube = 2.5*mm; // such that inside is empty
+     G4Tubs* PGTube = new G4Tubs("PGTube", r_PGTube-t_PGTube, r_PGTube, l_PGTube/2., 0*deg, 360*deg);
+     G4LogicalVolume* PGTubeLogic = new G4LogicalVolume(PGTube, fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"), "PGTube");
+     new G4PVPlacement(0, G4ThreeVector(0,0,l_PGTube/2. + 67*mm + 16*mm - l_TRGT/2.),PGTubeLogic,"PGTube",fMyLogic,false,1);
+     PGTubeLogic->SetVisAttributes(PlexiVisAtt);
+
+     // 10 small polystyrene scintillator slices
+     G4double l_PSS = 1*mm;
+     G4double r_PSS = 1*cm;
+     G4double PSS_start = 10*mm;
+
+     G4Tubs* PSS1 = new G4Tubs("PSS1", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS1Logic = new G4LogicalVolume(PSS1, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS1");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start),PSS1Logic,"PSS1",fMyLogic,false,1);
+     PSS1Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS2 = new G4Tubs("PSS2", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS2Logic = new G4LogicalVolume(PSS2, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS2");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+2*mm),PSS2Logic,"PSS2",fMyLogic,false,1);
+     PSS2Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS3 = new G4Tubs("PSS3", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS3Logic = new G4LogicalVolume(PSS3, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS3");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+4*mm),PSS3Logic,"PSS3",fMyLogic,false,1);
+     PSS3Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS4 = new G4Tubs("PSS4", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS4Logic = new G4LogicalVolume(PSS4, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS4");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+6*mm),PSS4Logic,"PSS4",fMyLogic,false,1);
+     PSS4Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS5 = new G4Tubs("PSS5", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS5Logic = new G4LogicalVolume(PSS5, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS5");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+8*mm),PSS5Logic,"PSS5",fMyLogic,false,1);
+     PSS5Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS6 = new G4Tubs("PSS6", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS6Logic = new G4LogicalVolume(PSS6, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS6");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+10*mm),PSS6Logic,"PSS6",fMyLogic,false,1);
+     PSS6Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS7 = new G4Tubs("PSS7", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS7Logic = new G4LogicalVolume(PSS7, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS7");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+12*mm),PSS7Logic,"PSS7",fMyLogic,false,1);
+     PSS7Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS8 = new G4Tubs("PSS8", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS8Logic = new G4LogicalVolume(PSS8, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS8");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+14*mm),PSS8Logic,"PSS8",fMyLogic,false,1);
+     PSS8Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS9 = new G4Tubs("PSS9", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS9Logic = new G4LogicalVolume(PSS9, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS9");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+16*mm),PSS9Logic,"PSS9",fMyLogic,false,1);
+     PSS9Logic->SetVisAttributes(BlueVisAtt);
+
+     G4Tubs* PSS10 = new G4Tubs("PSS10", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+     G4LogicalVolume* PSS10Logic = new G4LogicalVolume(PSS10, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS10");
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+18*mm),PSS10Logic,"PSS10",fMyLogic,false,1);
+     PSS10Logic->SetVisAttributes(BlueVisAtt);
+
+     /*
+     for (G4int i = 1; i < 11; i++) {
+         char slicenumber[100];
+         sprintf(slicenumber, "%d", i);
+         G4String VolumeName = "PGTube";
+         VolumeName += slicenumber;
+         G4String LogicalVolumeName = VolumeName;
+         LogicalVolumeName += "Logic";
+
+         G4Tubs* VolumeName = new G4Tubs(slicenumber, 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
+         G4LogicalVolume* LogicalVolumeName = new G4LogicalVolume(VolumeName, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), VolumeName);
+         new G4PVPlacement(0, G4ThreeVector(0,0,i*mm),Hallo,VolumeName,fMyLogic,false,1);
+
+        // G4cout << LogicalVolumeName << G4endl;
+
+     }*/
+
+
+
+ }
+
+/* G4double mocklength = 100*mm;
  G4double mockradius = 5*mm;
  G4double mockthickness = 1*mm;
  G4Tubs* Mock = new G4Tubs("Mock", mockradius-mockthickness, mockradius, mocklength/2., 0*deg, 360*deg);
  G4LogicalVolume* MockLogic = new G4LogicalVolume(Mock, fNistManager->FindOrBuildMaterial("G4_Cu"), "Mock");
  new G4PVPlacement(0, G4ThreeVector(0, 0, 50*mm), MockLogic, "Mock", fMyLogic, false, 1);
  MockLogic->SetVisAttributes(BlueVisAtt);
-
+*/
  //////////////////////////////////////////////////
  /// Magnetic Field: Solenoidal or Saddle
  //////////////////////////////////////////////////
 
-    if (fTypeMagneticCoils == G4String("Solenoidal") || fTypeMagneticCoils == G4String("solenoidal")) {
-       // The coils are approximated to be 3 individual layers of material, 460 microm NiTi, 340 microm Cu, 200 microm epoxy.
-       // NbTi coil layer:
-       G4double l_NbTiC = 136.0*mm;
-       G4double r_NbTiC = 24.6*mm;
-       G4double t_NbTiC = 0.460*mm;
-       G4Tubs* NbTiC=new G4Tubs("NbTiC",r_NbTiC-t_NbTiC,r_NbTiC,l_NbTiC/2,0*deg,360*deg);
-       G4LogicalVolume* NbTiCLogic=new G4LogicalVolume(NbTiC,fNistManager->FindOrBuildMaterial("A2_NbTi"),"NbTiC");
-       new G4PVPlacement(0,G4ThreeVector(0,0,(l_NbTiC/2 + 119*mm + 67*mm - l_TRGT/2.)),NbTiCLogic,"NbTiC",fMyLogic,false,1);
-       NbTiCLogic->SetVisAttributes(CyanVisAtt);
+ if (fTypeMagneticCoils == G4String("Solenoidal") || fTypeMagneticCoils == G4String("solenoidal")) {
+     // The coils are approximated to be 3 individual layers of material, 460 microm NiTi, 340 microm Cu, 200 microm epoxy.
+     // NbTi coil layer:
+     G4double l_NbTiC = 136.0*mm;
+     G4double r_NbTiC = 24.6*mm;
+     G4double t_NbTiC = 0.460*mm;
+     G4Tubs* NbTiC=new G4Tubs("NbTiC",r_NbTiC-t_NbTiC,r_NbTiC,l_NbTiC/2,0*deg,360*deg);
+     G4LogicalVolume* NbTiCLogic=new G4LogicalVolume(NbTiC,fNistManager->FindOrBuildMaterial("A2_NbTi"),"NbTiC");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_NbTiC/2 + 119*mm + 67*mm - l_TRGT/2.)),NbTiCLogic,"NbTiC",fMyLogic,false,1);
+     NbTiCLogic->SetVisAttributes(CyanVisAtt);
 
-       // Copper coil layer:
-       G4double l_CUC = 136.0*mm;
-       G4double r_CUC = 24.14*mm;
-       G4double t_CUC = 0.340*mm;
-       G4Tubs* CUC=new G4Tubs("CUC",r_CUC-t_CUC,r_CUC,l_CUC/2,0*deg,360*deg);
-       G4LogicalVolume* CUCLogic=new G4LogicalVolume(CUC,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUC");
-       new G4PVPlacement(0,G4ThreeVector(0,0,(l_CUC/2 + 119*mm + 67*mm - l_TRGT/2.)),CUCLogic,"CUC",fMyLogic,false,1);
-       CUCLogic->SetVisAttributes(CUVisAtt);
+     // Copper coil layer:
+     G4double l_CUC = 136.0*mm;
+     G4double r_CUC = 24.14*mm;
+     G4double t_CUC = 0.340*mm;
+     G4Tubs* CUC=new G4Tubs("CUC",r_CUC-t_CUC,r_CUC,l_CUC/2,0*deg,360*deg);
+     G4LogicalVolume* CUCLogic=new G4LogicalVolume(CUC,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUC");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_CUC/2 + 119*mm + 67*mm - l_TRGT/2.)),CUCLogic,"CUC",fMyLogic,false,1);
+     CUCLogic->SetVisAttributes(CUVisAtt);
 
-       // Epoxy coil layer:
-       G4double l_EPC = 136.0*mm;
-       G4double r_EPC = 23.8*mm;
-       G4double t_EPC = 0.200*mm;
-       G4Tubs* EPC=new G4Tubs("EPC",r_EPC-t_EPC,r_EPC,l_EPC/2,0*deg,360*deg);
-       G4LogicalVolume* EPCLogic=new G4LogicalVolume(EPC,fNistManager->FindOrBuildMaterial("A2_Epoxy"),"EPC");
-       new G4PVPlacement(0,G4ThreeVector(0,0,(l_EPC/2 + 119*mm + 67*mm - l_TRGT/2.)),EPCLogic,"EPC",fMyLogic,false,1);
-       EPCLogic->SetVisAttributes(MagentaVisAtt);
-    }
+     // Epoxy coil layer:
+     G4double l_EPC = 136.0*mm;
+     G4double r_EPC = 23.8*mm;
+     G4double t_EPC = 0.200*mm;
+     G4Tubs* EPC=new G4Tubs("EPC",r_EPC-t_EPC,r_EPC,l_EPC/2,0*deg,360*deg);
+     G4LogicalVolume* EPCLogic=new G4LogicalVolume(EPC,fNistManager->FindOrBuildMaterial("A2_Epoxy"),"EPC");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_EPC/2 + 119*mm + 67*mm - l_TRGT/2.)),EPCLogic,"EPC",fMyLogic,false,1);
+     EPCLogic->SetVisAttributes(MagentaVisAtt);
+ }
 
-    else if (fTypeMagneticCoils == G4String("Saddle") || fTypeMagneticCoils == G4String("saddle")) {
-       // Box-splitter
-       G4double xBoxSplitter = 25*mm;
-       G4double yBoxSplitter = 0.1*mm;
-       G4double zBoxSplitter = 136*mm;
-       G4Box *boxSplitter = new G4Box("boxSplitter", xBoxSplitter, yBoxSplitter, zBoxSplitter);
+ else if (fTypeMagneticCoils == G4String("Saddle") || fTypeMagneticCoils == G4String("saddle")) {
+     // Box-splitter
+     G4double xBoxSplitter = 25*mm;
+     G4double yBoxSplitter = 0.1*mm;
+     G4double zBoxSplitter = 136*mm;
+     G4Box *boxSplitter = new G4Box("boxSplitter", xBoxSplitter, yBoxSplitter, zBoxSplitter);
 
-       // Layer1
-       G4double lTube1 = 135.48*mm;
-       G4double rTube1 =  24.46*mm;
-       G4double tTube1 =   0.46*mm;
-       G4Tubs *tube1 = new G4Tubs("tube1", rTube1 - tTube1, rTube1, lTube1/2, 0*deg, 360*deg);
-       G4double xBox1 = 6*mm;
-       G4double yBox1 = 50*mm;
-       G4double zBox1 = 36*mm;
-       G4Box *box1 = new G4Box("box1", xBox1, yBox1, zBox1);
-       G4SubtractionSolid *tube_box1 = new G4SubtractionSolid("tube1-box1", tube1, box1);
-       G4SubtractionSolid *layer1 = new G4SubtractionSolid("layer1", tube_box1, boxSplitter);
-       G4LogicalVolume* logicSaddleCoilsLayer1 = new G4LogicalVolume(layer1, fNistManager->FindOrBuildMaterial("A2_NbTi"), "logicSaddleCoilsLayer1");
-       new G4PVPlacement(0, G4ThreeVector(0.,0.,(lTube1/2. + 119*mm + 67*mm - l_TRGT/2.)), logicSaddleCoilsLayer1, "physSaddleCoilsLayer1", fMyLogic, false, 1);
-       logicSaddleCoilsLayer1->SetVisAttributes(CyanVisAtt);
+     // Layer1
+     G4double lTube1 = 135.48*mm;
+     G4double rTube1 =  24.46*mm;
+     G4double tTube1 =   0.46*mm;
+     G4Tubs *tube1 = new G4Tubs("tube1", rTube1 - tTube1, rTube1, lTube1/2, 0*deg, 360*deg);
+     G4double xBox1 = 6*mm;
+     G4double yBox1 = 50*mm;
+     G4double zBox1 = 36*mm;
+     G4Box *box1 = new G4Box("box1", xBox1, yBox1, zBox1);
+     G4SubtractionSolid *tube_box1 = new G4SubtractionSolid("tube1-box1", tube1, box1);
+     G4SubtractionSolid *layer1 = new G4SubtractionSolid("layer1", tube_box1, boxSplitter);
+     G4LogicalVolume* logicSaddleCoilsLayer1 = new G4LogicalVolume(layer1, fNistManager->FindOrBuildMaterial("A2_NbTi"), "logicSaddleCoilsLayer1");
+     new G4PVPlacement(0, G4ThreeVector(0.,0.,(lTube1/2. + 119*mm + 67*mm - l_TRGT/2.)), logicSaddleCoilsLayer1, "physSaddleCoilsLayer1", fMyLogic, false, 1);
+     logicSaddleCoilsLayer1->SetVisAttributes(CyanVisAtt);
 
-       // Layer2
-       G4double lTube2 = 135.88*mm;
-       G4double rTube2 =  24.92*mm;
-       G4double tTube2 =   0.46*mm;
-       G4Tubs *tube2 = new G4Tubs("tube2", rTube2 - tTube2, rTube2, lTube2/2, 0*deg, 360*deg);
-       G4double xBox2 = 20*mm;
-       G4double yBox2 = 50*mm;
-       G4double zBox2 = 50*mm;
-       G4Box *box2 = new G4Box("box2", xBox2, yBox2, zBox2);
-       G4SubtractionSolid *tube_box2 = new G4SubtractionSolid("tube2-box2", tube2, box2);
-       G4SubtractionSolid *layer2 = new G4SubtractionSolid("layer2", tube_box2, boxSplitter);
-       G4LogicalVolume* logicSaddleCoilsLayer2 = new G4LogicalVolume(layer2, fNistManager->FindOrBuildMaterial("A2_NbTi"), "logicSaddleCoilsLayer2");
-       new G4PVPlacement(0, G4ThreeVector(0.,0.,(lTube2/2 + 119*mm + 67*mm - l_TRGT/2.)), logicSaddleCoilsLayer2, "physSaddleCoilsLayer2", fMyLogic, false, 1);
-       logicSaddleCoilsLayer2->SetVisAttributes(CyanVisAtt);
-    }
+     // Layer2
+     G4double lTube2 = 135.88*mm;
+     G4double rTube2 =  24.92*mm;
+     G4double tTube2 =   0.46*mm;
+     G4Tubs *tube2 = new G4Tubs("tube2", rTube2 - tTube2, rTube2, lTube2/2, 0*deg, 360*deg);
+     G4double xBox2 = 20*mm;
+     G4double yBox2 = 50*mm;
+     G4double zBox2 = 50*mm;
+     G4Box *box2 = new G4Box("box2", xBox2, yBox2, zBox2);
+     G4SubtractionSolid *tube_box2 = new G4SubtractionSolid("tube2-box2", tube2, box2);
+     G4SubtractionSolid *layer2 = new G4SubtractionSolid("layer2", tube_box2, boxSplitter);
+     G4LogicalVolume* logicSaddleCoilsLayer2 = new G4LogicalVolume(layer2, fNistManager->FindOrBuildMaterial("A2_NbTi"), "logicSaddleCoilsLayer2");
+     new G4PVPlacement(0, G4ThreeVector(0.,0.,(lTube2/2 + 119*mm + 67*mm - l_TRGT/2.)), logicSaddleCoilsLayer2, "physSaddleCoilsLayer2", fMyLogic, false, 1);
+     logicSaddleCoilsLayer2->SetVisAttributes(CyanVisAtt);
+ }
 
  //////////////////////////////////////////////////
  /// Cylinders, from the outside working in
@@ -347,90 +442,97 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  new G4PVPlacement(0,G4ThreeVector(0,0,(l_SSIB/2 + 21.25*mm + 67*mm - l_TRGT/2.)),SSIBLogic,"SSIB",fMyLogic,false,1);
  SSIBLogic->SetVisAttributes(SSVisAtt);
 
- // Inner copper cylinder, part A:
- G4double l_CUIA = 10.4*mm;
- G4double r_CUIA = 11.5*mm;
- G4double t_CUIA = 1.5*mm;
- G4Tubs* CUIA=new G4Tubs("CUIA",r_CUIA-t_CUIA,r_CUIA,l_CUIA/2,0*deg,360*deg);
- G4LogicalVolume* CUIALogic=new G4LogicalVolume(CUIA,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUIA");
- new G4PVPlacement(0,G4ThreeVector(0,0,(231.5*mm + 1.0*mm + l_CUIA/2 - l_TRGT/2.)),CUIALogic,"CUIA",fMyLogic,false,1);
- CUIALogic->SetVisAttributes(CUVisAtt);
+ if (active == false) {
 
- // Inner copper cylinder, part B:
- G4double l_CUIB = 1.0*mm;
- G4double r_CUIB = 12.2*mm;
- G4double t_CUIB = 2.2*mm;
- G4Tubs* CUIB=new G4Tubs("CUIB",r_CUIB-t_CUIB,r_CUIB,l_CUIB/2,0*deg,360*deg);
- G4LogicalVolume* CUIBLogic=new G4LogicalVolume(CUIB,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUIB");
- new G4PVPlacement(0,G4ThreeVector(0,0,(231.5*mm + l_CUIB/2 - l_TRGT/2.)),CUIBLogic,"CUIB",fMyLogic,false,1);
- CUIBLogic->SetVisAttributes(CUVisAtt);
+     //////////////////////////////////////////////////
+     /// Inner Cu Cylinder
+     //////////////////////////////////////////////////
 
- // Inner copper cylinder, part C:
- G4double l_CUIC = 9.0*mm;
- G4double r_CUIC = 12.2*mm;
- G4double t_CUIC = 0.5*mm;
- G4Tubs* CUIC=new G4Tubs("CUIC",r_CUIC-t_CUIC,r_CUIC,l_CUIC/2,0*deg,360*deg);
- G4LogicalVolume* CUICLogic=new G4LogicalVolume(CUIC,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUIC");
- new G4PVPlacement(0,G4ThreeVector(0,0,(231.5*mm - l_CUIC/2 - l_TRGT/2.)),CUICLogic,"CUIC",fMyLogic,false,1);
- CUICLogic->SetVisAttributes(CUVisAtt);
+     // Inner copper cylinder, part A:
+     G4double l_CUIA = 10.4*mm;
+     G4double r_CUIA = 11.5*mm;
+     G4double t_CUIA = 1.5*mm;
+     G4Tubs* CUIA=new G4Tubs("CUIA",r_CUIA-t_CUIA,r_CUIA,l_CUIA/2,0*deg,360*deg);
+     G4LogicalVolume* CUIALogic=new G4LogicalVolume(CUIA,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUIA");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(231.5*mm + 1.0*mm + l_CUIA/2 - l_TRGT/2.)),CUIALogic,"CUIA",fMyLogic,false,1);
+     CUIALogic->SetVisAttributes(CUVisAtt);
 
- // Inner copper cylinder, part D:
- G4double l_CUID = 215.*mm - 67*mm;
- G4double r_CUID = 12.5*mm;
- G4double t_CUID = 0.3*mm;
- G4Tubs* CUID=new G4Tubs("CUID",r_CUID-t_CUID,r_CUID,l_CUID/2,0*deg,360*deg);
- G4LogicalVolume* CUIDLogic=new G4LogicalVolume(CUID,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUID");
- new G4PVPlacement(0,G4ThreeVector(0,0,(l_CUID/2 + 67*mm + 16*mm - l_TRGT/2.)),CUIDLogic,"CUID",fMyLogic,false,1);
- CUIDLogic->SetVisAttributes(CUVisAtt);
+     // Inner copper cylinder, part B:
+     G4double l_CUIB = 1.0*mm;
+     G4double r_CUIB = 12.2*mm;
+     G4double t_CUIB = 2.2*mm;
+     G4Tubs* CUIB=new G4Tubs("CUIB",r_CUIB-t_CUIB,r_CUIB,l_CUIB/2,0*deg,360*deg);
+     G4LogicalVolume* CUIBLogic=new G4LogicalVolume(CUIB,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUIB");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(231.5*mm + l_CUIB/2 - l_TRGT/2.)),CUIBLogic,"CUIB",fMyLogic,false,1);
+     CUIBLogic->SetVisAttributes(CUVisAtt);
 
- //////////////////////////////////////////////////
- /// Butanol Target and Kapton Cell
- //////////////////////////////////////////////////
+     // Inner copper cylinder, part C:
+     G4double l_CUIC = 9.0*mm;
+     G4double r_CUIC = 12.2*mm;
+     G4double t_CUIC = 0.5*mm;
+     G4Tubs* CUIC=new G4Tubs("CUIC",r_CUIC-t_CUIC,r_CUIC,l_CUIC/2,0*deg,360*deg);
+     G4LogicalVolume* CUICLogic=new G4LogicalVolume(CUIC,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUIC");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(231.5*mm - l_CUIC/2 - l_TRGT/2.)),CUICLogic,"CUIC",fMyLogic,false,1);
+     CUICLogic->SetVisAttributes(CUVisAtt);
 
- // The butanol target is encased in kapton. This cup has holes in it, which are ingnored.
- // Kapton outside cell, part A:
- G4double l_KAPA = 0.6*mm;
- G4double r_KAPA = 10.505*mm;
- G4Tubs* KAPA=new G4Tubs("KAPA",0,r_KAPA,l_KAPA/2,0*deg,360*deg);
- G4LogicalVolume* KAPALogic=new G4LogicalVolume(KAPA,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPA");
- new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPA/2 + 20.0*mm + 11.5*mm + 231.5*mm - l_TRGT/2.)),KAPALogic,"KAPA",fMyLogic,false,1);
- KAPALogic->SetVisAttributes(RedVisAtt);
+     // Inner copper cylinder, part D:
+     G4double l_CUID = 215.*mm - 67*mm;
+     G4double r_CUID = 12.5*mm;
+     G4double t_CUID = 0.3*mm;
+     G4Tubs* CUID=new G4Tubs("CUID",r_CUID-t_CUID,r_CUID,l_CUID/2,0*deg,360*deg);
+     G4LogicalVolume* CUIDLogic=new G4LogicalVolume(CUID,fNistManager->FindOrBuildMaterial("G4_Cu"),"CUID");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_CUID/2 + 67*mm + 16*mm - l_TRGT/2.)),CUIDLogic,"CUID",fMyLogic,false,1);
+     CUIDLogic->SetVisAttributes(CUVisAtt);
 
- // Kapton outside cell, part B:
- G4double l_KAPB = 19.0*mm;
- G4double r_KAPB = 10.505*mm;
- G4double t_KAPB = 0.6*mm;
- G4Tubs* KAPB=new G4Tubs("KAPB",r_KAPB-t_KAPB,r_KAPB,l_KAPB/2,0*deg,360*deg);
- G4LogicalVolume* KAPBLogic=new G4LogicalVolume(KAPB,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPB");
- new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPB/2 + 1.0*mm + 11.5*mm + 231.5*mm - l_TRGT/2.)),KAPBLogic,"KAPB",fMyLogic,false,1);
- KAPBLogic->SetVisAttributes(RedVisAtt);
+     //////////////////////////////////////////////////
+     /// Butanol Target and Kapton Cell
+     //////////////////////////////////////////////////
 
- // Kapton outside cell, part C:
- G4double l_KAPC = 1.0*mm;
- G4double r_KAPC = 12.43*mm;
- G4double t_KAPC = 2.5*mm;
- G4Tubs* KAPC=new G4Tubs("KAPC",r_KAPC-t_KAPC,r_KAPC,l_KAPC/2,0*deg,360*deg);
- G4LogicalVolume* KAPCLogic=new G4LogicalVolume(KAPC,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPC");
- new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPC/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),KAPCLogic,"KAPC",fMyLogic,false,1);
- KAPCLogic->SetVisAttributes(RedVisAtt);
+     // The butanol target is encased in kapton. This cup has holes in it, which are ingnored.
+     // Kapton outside cell, part A:
+     G4double l_KAPA = 0.6*mm;
+     G4double r_KAPA = 10.505*mm;
+     G4Tubs* KAPA=new G4Tubs("KAPA",0,r_KAPA,l_KAPA/2,0*deg,360*deg);
+     G4LogicalVolume* KAPALogic=new G4LogicalVolume(KAPA,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPA");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPA/2 + 20.0*mm + 11.5*mm + 231.5*mm - l_TRGT/2.)),KAPALogic,"KAPA",fMyLogic,false,1);
+     KAPALogic->SetVisAttributes(RedVisAtt);
 
- // Kapton outside cell, part D:
- G4double l_KAPD = 10.0*mm;
- G4double r_KAPD = 12.43*mm;
- G4double t_KAPD = 0.93*mm;
- G4Tubs* KAPD=new G4Tubs("KAPD",r_KAPD-t_KAPD,r_KAPD,l_KAPD/2,0*deg,360*deg);
- G4LogicalVolume* KAPDLogic=new G4LogicalVolume(KAPD,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPD");
- new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPD/2 + 1.5*mm + 231.5*mm - l_TRGT/2.)),KAPDLogic,"KAPD",fMyLogic,false,1);
- KAPDLogic->SetVisAttributes(RedVisAtt);
+     // Kapton outside cell, part B:
+     G4double l_KAPB = 19.0*mm;
+     G4double r_KAPB = 10.505*mm;
+     G4double t_KAPB = 0.6*mm;
+     G4Tubs* KAPB=new G4Tubs("KAPB",r_KAPB-t_KAPB,r_KAPB,l_KAPB/2,0*deg,360*deg);
+     G4LogicalVolume* KAPBLogic=new G4LogicalVolume(KAPB,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPB");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPB/2 + 1.0*mm + 11.5*mm + 231.5*mm - l_TRGT/2.)),KAPBLogic,"KAPB",fMyLogic,false,1);
+     KAPBLogic->SetVisAttributes(RedVisAtt);
 
- // Target cell, butanol, 60% filling:
- G4double l_BTRGT = 20.0*mm;
- G4double r_BTRGT = 9.905*mm;
- G4Tubs* BTRGT=new G4Tubs("BTRGT",0,r_BTRGT,l_BTRGT/2,0*deg,360*deg);
- G4LogicalVolume* BTRGTLogic=new G4LogicalVolume(BTRGT,fNistManager->FindOrBuildMaterial("A2_HeButanol"),"BTRGT");
- //G4LogicalVolume* BTRGTLogic=new G4LogicalVolume(BTRGT,fNistManager->FindOrBuildMaterial("A2_HeMix"),"BTRGT");
- new G4PVPlacement(0,G4ThreeVector(0,0,(l_BTRGT/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),BTRGTLogic,"BTRGT",fMyLogic,false,1);
- BTRGTLogic->SetVisAttributes(MagentaVisAtt);
+     // Kapton outside cell, part C:
+     G4double l_KAPC = 1.0*mm;
+     G4double r_KAPC = 12.43*mm;
+     G4double t_KAPC = 2.5*mm;
+     G4Tubs* KAPC=new G4Tubs("KAPC",r_KAPC-t_KAPC,r_KAPC,l_KAPC/2,0*deg,360*deg);
+     G4LogicalVolume* KAPCLogic=new G4LogicalVolume(KAPC,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPC");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPC/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),KAPCLogic,"KAPC",fMyLogic,false,1);
+     KAPCLogic->SetVisAttributes(RedVisAtt);
+
+     // Kapton outside cell, part D:
+     G4double l_KAPD = 10.0*mm;
+     G4double r_KAPD = 12.43*mm;
+     G4double t_KAPD = 0.93*mm;
+     G4Tubs* KAPD=new G4Tubs("KAPD",r_KAPD-t_KAPD,r_KAPD,l_KAPD/2,0*deg,360*deg);
+     G4LogicalVolume* KAPDLogic=new G4LogicalVolume(KAPD,fNistManager->FindOrBuildMaterial("G4_KAPTON"),"KAPD");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_KAPD/2 + 1.5*mm + 231.5*mm - l_TRGT/2.)),KAPDLogic,"KAPD",fMyLogic,false,1);
+     KAPDLogic->SetVisAttributes(RedVisAtt);
+
+     // Target cell, butanol, 60% filling:
+     G4double l_BTRGT = 20.0*mm;
+     G4double r_BTRGT = 9.905*mm;
+     G4Tubs* BTRGT=new G4Tubs("BTRGT",0,r_BTRGT,l_BTRGT/2,0*deg,360*deg);
+     G4LogicalVolume* BTRGTLogic=new G4LogicalVolume(BTRGT,fNistManager->FindOrBuildMaterial("A2_HeButanol"),"BTRGT");
+     //G4LogicalVolume* BTRGTLogic=new G4LogicalVolume(BTRGT,fNistManager->FindOrBuildMaterial("A2_HeMix"),"BTRGT");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(l_BTRGT/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),BTRGTLogic,"BTRGT",fMyLogic,false,1);
+     BTRGTLogic->SetVisAttributes(MagentaVisAtt);
+ }
 
  //////////////////////////////////////////////////
  /// Helium between Inner SS and Cu Cylinders

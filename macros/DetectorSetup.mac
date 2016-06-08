@@ -36,9 +36,10 @@
 #/A2/det/useTarget Solid
 #/A2/det/targetMaterial G4_Pb
 #/A2/det/targetMaterial G4_GRAPHITE
-#####Polarised target
+#####Polarised target: Active (G4_POLYSTYRENE) or not (A2_HeButanol)
 /A2/det/useTarget Polarized
-/A2/det/targetMaterial A2_HeButanol
+#/A2/det/targetMaterial A2_HeButanol
+/A2/det/targetMaterial G4_POLYSTYRENE
 /A2/det/targetMagneticCoils Solenoidal
 #/A2/det/targetMagneticCoils Saddle
 #/A2/det/setTargetMagneticFieldMap wouter_field_map.dat

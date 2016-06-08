@@ -97,21 +97,88 @@
 
 ## To draw individual parts
 /vis/scene/create
+#/vis/scene/add/volume Mock
+
+## Outer Cylinders
 #/vis/scene/add/volume CUO
 #/vis/scene/add/volume SSO
-#/vis/scene/add/volume Mock
+
+## Solenoidal Magnetic Coils
+#/vis/scene/add/volume NbTiC
+#/vis/scene/add/volume CUC
+#/vis/scene/add/volume EPC
+
+## Saddle Magnetic Coils
+#/vis/scene/add/volume layer1
+#/vis/scene/add/volume layer2
+
+## Middle Cu Cylinder
+#/vis/scene/add/volume CUMA
+#/vis/scene/add/volume CUMB
+#/vis/scene/add/volume CUMC
+
+## Inner SS Cylinder
+#/vis/scene/add/volume SSIA
+#/vis/scene/add/volume SSIB
+
+## Inner Cu Cylinder
+#/vis/scene/add/volume CUIA
+#/vis/scene/add/volume CUIB
+#/vis/scene/add/volume CUIC
+#/vis/scene/add/volume CUID
+
+## Butanol Target and Kapton Cell
+#/vis/scene/add/volume KAPA
+#/vis/scene/add/volume KAPB
+#/vis/scene/add/volume KAPC
+#/vis/scene/add/volume KAPD
 #/vis/scene/add/volume BTRGT
 
+## Helium Between Cylinders
+#/vis/scene/add/volume HEA
+#/vis/scene/add/volume HEB
+#/vis/scene/add/volume HEC
+#/vis/scene/add/volume HED
+#/vis/scene/add/volume HEE
+#/vis/scene/add/volume HEF
+
+## Windows
+#/vis/scene/add/volume TIOW
+#/vis/scene/add/volume CUOW
+#/vis/scene/add/volume ALOW
+#/vis/scene/add/volume ALIW
+#/vis/scene/add/volume CUBA
+#/vis/scene/add/volume CUBB
+#/vis/scene/add/volume TIMW
+#/vis/scene/add/volume SSIW
+#/vis/scene/add/volume TIIW
+
+################## Active Target
+## Plexiglass Tube
+/vis/scene/add/volume PGTube
+
+## Polystyrene scintillators
+#/vis/scene/add/volume PSS1
+/vis/scene/add/volume PSS2
+/vis/scene/add/volume PSS3
+/vis/scene/add/volume PSS4
+/vis/scene/add/volume PSS5
+/vis/scene/add/volume PSS6
+/vis/scene/add/volume PSS7
+/vis/scene/add/volume PSS8
+/vis/scene/add/volume PSS9
+/vis/scene/add/volume PSS10
+
 ## To draw all of the target
-/vis/scene/add/volume TRGT
+#/vis/scene/add/volume TRGT
 
 /vis/sceneHandler/attach
 
 ## Visual Aspects
-/vis/viewer/set/viewpointThetaPhi 10 80
+/vis/viewer/set/viewpointThetaPhi 90 0
 /vis/viewer/set/style wireframe
 #/vis/viewer/set/style surface
-#/vis/scene/add/axes 0 0 0 30 mm
+/vis/scene/add/axes 0 0 0 30 mm
 #/vis/scene/add/text 0 0 0 mm 40 -100 200 LogVol:CUMALogic
 /vis/viewer/refresh
 /vis/viewer/flush
