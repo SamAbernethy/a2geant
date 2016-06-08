@@ -1,7 +1,7 @@
 // Sam Abernethy, June 2016
 // Changing A2PolarizedTarget to include Active Target
 // Old version of Polarized Target is in 'A2NotActivePolarizedTarget.cc'
-// Plan: first, get the active target constructed by making volumes from Mike
+// Plan: first, get the active target constructed by making volumes from Maik
 // Second, change the structure such that the input of Active vs. not active can be chosen in DetectorSetup.mac and then passed in as fMaterial
 
 #include "A2PolarizedTarget.hh"
@@ -36,23 +36,25 @@
  * */
 
 /* ************************************** VOLUMES AND MATERIALS *************************************
- * "Mother" Air volume
- * Outer SS cylinder
- * Outer Cu cylinder
- * Solenoidal magnetic coils: NbTi, Cu, epoxy
- * Saddle magnetic coils: NbTi, 2 layers
- * Middle Cu cylinder, 3 thicknesses
- * Inner SS cylinder, 2 thicknesses
- * Inner Cu cylinder, 4 parts
- * Kapton cell, 4 parts
- * Target cell, butanol
- * He between inner SS and Cu cylinders, 6 parts
- * Outer Ti window, with Cu ring
- * Outer Al window
- * Inner Al window
- * Cu bit between coils and inner Al window, 2 parts
- * Middle Ti window, with SS ring
- * Inner Ti window
+ * "Mother" Air volume -- fMyLogic
+ * Outer SS cylinder -- SSOLogic
+ * Outer Cu cylinder -- CUOLogic
+ * Solenoidal magnetic coils --  NbTiCLogic, CUCLogic, EPCLogic
+ * Saddle magnetic coils -- logicSaddleCoilsLayer1, logicSaddleCoilsLayer2
+ * Middle Cu cylinder -- CUMALogic, CUMBLogic, CUMCLogic
+ * Inner SS cylinder -- SSIALogic, SSIBLogic
+ * Inner Cu cylinder -- CUIALogic, CUIBLogic, CUICLogic, CUIDLogic
+ * Kapton cell -- KAPALogic, KAPBLogic, KAPCLogic, KAPDLogic
+ * Butanol Target cell -- BTRGTLogic
+ * He between inner SS and Cu cylinders -- HEALogic, ..., HEFLogic
+ * Outer Ti window -- TIOWLogic
+ * Cu ring -- CUOWLogic
+ * Outer Al window -- ALOWLogic
+ * Inner Al window -- ALIWLogic
+ * Cu bit between coils and inner Al window -- CUBALogic, CUBBLogic
+ * Middle Ti window -- TIMWLogic
+ * SS ring -- SSIWLogic
+ * Inner Ti window -- TIIWLogic
  *
  * l = length, r = radius, t = thickness
  * distances are HALF-LENGTHS
@@ -105,6 +107,19 @@
  * if fMaterial is something, give it a length (4 options)
  * Cone: G4Cons("Name", innerradius1, outerradius1, innerradius2, outerradius2, halflengthinz, startingphi, deltaphi)
  * Target holder?
+ *
+ * Structure of the fMaterial concept:
+ *
+ * G4double trgt_length;
+ * if (!fMaterial) {G4cerr<<"A2PolarisedTarget::Construct() Polarised target material not defined. Add in DetectorSetup.mac."<<G4endl;exit(1);}
+ * else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("A2_HeButanol")) trgt_length = 20.0*mm;
+ * else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("A2_Polarized")) trgt_length = .*mm; // MAYBE, IF IT'S CALLED POLARIZED
+ * else {G4cerr<<"A2PolarisedTarget::Construct() Polarised target material not allowed. Change in DetectorSetup.mac."<<G4endl;exit(1);}
+ * fLength = trgt_length;
+ *
+ * In SolidTarget, CELLLogic is made up of the material fMaterial
+ * In CryoTarget, LD2ALogic is made up of the material fMaterial
+ *
  * */
 
 A2PolarizedTarget::A2PolarizedTarget()
@@ -141,6 +156,9 @@ void A2PolarizedTarget::SetMagneticField(G4String &nameFileFieldMap)
 
 G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
 {
+
+ // ******************************************** General Initialization ****************************************
+
 
 //   //Magnetic field moved from A2DetectorConstruction dglazier
 //   static G4bool fieldIsInitialized = false;
@@ -183,6 +201,32 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
  G4VisAttributes* RedVisAtt= new G4VisAttributes(G4Colour(1.0, 0.0, 0.0)); //kapton
  G4VisAttributes* WhiteVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0)); //helium
 
+
+ // ************************************************* Active Target **************************************************************
+ {
+
+     if (!fMaterial) {G4cerr << "No target material chosen. Please add in DetectorSetup.mac." << G4endl; exit(1);}
+     else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("A2_HeButanol")) {
+         G4cout << "A2_HeButanol chosen. " << G4endl;
+     }
+     else {
+         G4cerr << "Target material incorrectly chosen. Please change in DetectorSetup.mac." << G4endl;
+         G4cerr << "You chose the following material, which isn't allowed:" << fMaterial << G4endl; exit(1);
+     }
+
+     G4double mocklength = 20*mm;
+     G4double mockradius = 5*mm;
+     G4double mockthickness = 1*mm;
+
+     G4Tubs* Mock = new G4Tubs("Mock", mockradius-3*mockthickness, mockradius, mocklength/2., 0*deg, 360*deg);
+     G4LogicalVolume* MockLogic = new G4LogicalVolume(Mock, fNistManager->FindOrBuildMaterial("G4_Cu"), "Mock");
+     new G4PVPlacement(0, G4ThreeVector(0, 0, 50*mm), MockLogic, "Mock", fMyLogic, false, 1);
+     MockLogic->SetVisAttributes(BlueVisAtt);
+
+ }
+
+ // ******************************************* Old Polarized Target **********************************************
+ {
  //Cylinders which make up the target, starting from the outside and working in.
  //Outer stainless steel cylinder:
  G4double l_SSO = 233.5*mm;
@@ -193,7 +237,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
  new G4PVPlacement(0,G4ThreeVector(0,0,(l_SSO/2 + 42.5*mm + 67*mm - l_TRGT/2.)),SSOLogic,"SSO",fMyLogic,false,1);
  SSOLogic->SetVisAttributes(SSVisAtt);
 //  SSOLogic->SetVisAttributes(G4VisAttributes::Invisible);
- 
+
  //Outer copper cylinder:
  G4double l_CUO = 222.5*mm;
  G4double r_CUO = 29.0*mm;
@@ -277,7 +321,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
    logicSaddleCoilsLayer2->SetVisAttributes(CyanVisAtt);
    //  logicSaddleCoilsLayer2->SetVisAttributes(G4VisAttributes::Invisible);
  }
- 
+
  //The coils are wrapped around part of a middle copper cylinder, which has 3 different thicknesses, 0.3, 0.7, and 1.2, labelled A, B, and C respectively, going up-beam.
  //Middle copper cylinder, part A, which the coils are wrapped around:
  G4double l_CUMA = 136.0*mm;
@@ -564,6 +608,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic)
  new G4PVPlacement(0,G4ThreeVector(0,0,(t_TIIW/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),TIIWLogic,"TIIW",fMyLogic,false,1);
  TIIWLogic->SetVisAttributes(BlueVisAtt);
 //  TIIWLogic->SetVisAttributes(G4VisAttributes::Invisible);
+}
 
  return fMyPhysi;
 }

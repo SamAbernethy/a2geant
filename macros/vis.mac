@@ -19,14 +19,14 @@
 #
 # create empty scene
 #
-/vis/scene/create
+#/vis/scene/create
 #
 # Create a scene handler for a specific graphics system
 # (Edit the next line(s) to choose another graphic system)
 #
 # Use this open statement to get an .eps and .prim files
 # suitable for viewing in DAWN.
-/vis/open DAWNFILE
+#/vis/open DAWNFILE
 #
 # Use this open statement instead for OpenGL in immediate mode.
 #/vis/open OGLIXm
@@ -48,8 +48,8 @@
 # for drawing the tracks
 # (if too many tracks cause core dump => storeTrajectory 0)
 #
-/tracking/storeTrajectory 1
-/vis/scene/endOfEventAction accumulate
+#/tracking/storeTrajectory 1
+#/vis/scene/endOfEventAction accumulate
 #
 # At end of each run, an automatic flush causes graphical output.
 #/run/beamOn 1
@@ -66,27 +66,54 @@
 #/vis/scene/create 
 #/vis/viewer/reset
 #/vis/viewer/zoom 1.
-/vis/viewer/set/viewpointThetaPhi 130. 40.
+#/vis/viewer/set/viewpointThetaPhi 130. 40.
 #/vis/viewer/set/viewpointThetaPhi 0. 0.
-/vis/viewer/set/style surface
+#/vis/viewer/set/style surface
 #/vis/drawVolume
 #/vis/scene/endOfEventAction accumulate	
-/tracking/storeTrajectory 1	
+#/tracking/storeTrajectory 1	
 #/vis/geometry/set/visibility CNIN 0 false
 #/vis/geometry/set/forceAuxEdgeVisible World -1 true
-/vis/viewer/set/autoRefresh true
-/vis/verbose warnings
+#/vis/viewer/set/autoRefresh true
+#/vis/verbose warnings
    
-/gun/particle pi-
-/gun/energy 3 MeV
+#/gun/particle pi-
+#/gun/energy 3 MeV
 #/particle/select kaon+
 #/particle/process/inactivate 3
 #for checking CCUT
-/gun/direction 0. 0. 1
-/gun/position 0 0 0
+#/gun/direction 0. 0. 1
+#/gun/position 0 0 0
 #/gun/position -2.924 10.2 22.98
 #/gun/position -2.924 9.7 22.98
 #/gun/position -2.558 9.7 20.66
 #/gun/position 1 9.08 0
 #/gun/position 1 15.2 0
+
+#my own DAWN commands
+/vis/open DAWNFILE
+
+## To draw everything
+#/vis/drawVolume
+
+
+## To draw individual parts
+/vis/scene/create
+
+## To draw all of the target
+/vis/scene/add/volume TRGT
+
+#/vis/scene/add/volume CUO
+#/vis/scene/add/volume SSO
+#/vis/scene/add/volume Mock
+/vis/sceneHandler/attach
+
+## Visual Aspects
+/vis/viewer/set/viewpointThetaPhi 10 80
+/vis/viewer/set/style wireframe
+#/vis/viewer/set/style surface
+#/vis/scene/add/axes 0 0 0 30 mm
+#/vis/scene/add/text 0 0 0 mm 40 -100 200 LogVol:CUMALogic
+/vis/viewer/refresh
+/vis/viewer/flush
 
