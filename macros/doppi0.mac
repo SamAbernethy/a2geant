@@ -32,7 +32,7 @@
 /A2/generator/Track 2
 /A2/generator/Track 3
 #Open the file and set up the ntuple for reading
-/A2/generator/InputFile /Disk/thehub_disk_5/msikora/GP_PPi0_SAID_hub__1M_99.root
+/A2/generator/InputFile evgen/5cm/compton_he3_100_in.root
 #####Output
 #Open the output file for writing
-/A2/event/setOutputFile test1.root
+/A2/event/setOutputFile out/5cm/pi0example.root

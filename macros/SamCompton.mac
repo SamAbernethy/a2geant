@@ -15,7 +15,7 @@
   /A2/generator/Track 2
 
   #open the file and set up ntuple for reading (CHANGE FILE NAME)
-  /A2/generator/InputFile evgen/5cm/compton_he3_100_in.root
+  /A2/generator/InputFile evgen/2cm/compton_p_100_in.root
 
   #set output for writing
-  /A2/event/setOutputFile out/5cm/polarizedcomptonexample.root
+  /A2/event/setOutputFile out/2cm/activetarget.root
