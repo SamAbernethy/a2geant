@@ -117,14 +117,14 @@
 #/vis/scene/add/volume CUMC
 
 ## Inner SS Cylinder
-/vis/scene/add/volume SSIA
-/vis/scene/add/volume SSIB
+#/vis/scene/add/volume SSIA
+#/vis/scene/add/volume SSIB
 
 ## Inner Cu Cylinder
-/vis/scene/add/volume CUIA
-/vis/scene/add/volume CUIB
-/vis/scene/add/volume CUIC
-/vis/scene/add/volume CUID
+#/vis/scene/add/volume CUIA
+#/vis/scene/add/volume CUIB
+#/vis/scene/add/volume CUIC
+#/vis/scene/add/volume CUID
 
 ## Butanol Target and Kapton Cell
 /vis/scene/add/volume KAPA
@@ -169,11 +169,11 @@
 /vis/scene/add/volume PSS10
 
 ## Oddly shaped cap
-/vis/scene/add/volume ConeCap
-/vis/scene/add/volume SphereCap
-/vis/scene/add/volume HollowSphereCap
-/vis/scene/add/volume ParaboloidCap
-/vis/scene/add/volume PolyconeCap
+#/vis/scene/add/volume ConeCap
+#/vis/scene/add/volume SphereCap
+#/vis/scene/add/volume HollowSphereCap
+#/vis/scene/add/volume ParaboloidCap
+#/vis/scene/add/volume PolyconeCap
 
 ## To draw all of the target
 #/vis/scene/add/volume TRGT
@@ -181,7 +181,9 @@
 /vis/sceneHandler/attach
 
 ## Visual Aspects
-/vis/viewer/set/viewpointThetaPhi 80 0
+#/vis/viewer/set/sectionPlane on 0.1 0.0 0.0 cm 1.0 0.0 0.0
+#/vis/viewer/set/viewpointThetaPhi 60 20
+/vis/viewer/set/viewpointThetaPhi 90 0
 /vis/viewer/set/style wireframe
 #/vis/viewer/set/style surface
 /vis/scene/add/axes 0 0 0 10 mm

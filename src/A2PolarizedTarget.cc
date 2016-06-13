@@ -190,7 +190,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  fMyPhysi=new G4PVPlacement(0,G4ThreeVector(0,0, - 20.0*mm/2 - 11.5*mm - 231.5*mm + l_TRGT/2.),fMyLogic,"TRGT",fMotherLogic,false,1);
  fMyLogic->SetVisAttributes (G4VisAttributes::Invisible);
 
- // Colours with thier corresponding materials used in the visualization:
+ // Colours with their corresponding materials used in the visualization:
  G4VisAttributes* SSVisAtt= new G4VisAttributes(G4Colour(0.8,0.8,0.8)); // stainless steel (grey)
  G4VisAttributes* CUVisAtt= new G4VisAttributes(G4Colour(0.8,0.6,0.2)); // copper (brown)
  G4VisAttributes* CyanVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0.0)); // NbTi
@@ -209,70 +209,70 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  if (active == true)
  {
      // Plexiglass Tube
-     G4double l_PGTube = 180*mm;
-     G4double r_PGTube = 12.5*mm; // diameter of 2.5 cm
-     G4double t_PGTube = 2.5*mm; // such that inside is empty
-     G4double centeroftube = l_PGTube/2. + 67*mm + 16*mm - l_TRGT/2.; // from old copper cylinder
+     G4double l_PGTube = 140.*mm;
+     G4double r_PGTube = 13.*mm; // diameter of 26 mm
+     G4double t_PGTube = 2.9*mm; // such that inside is empty
+     G4double tubelocation = l_PGTube/2. + 67*mm + 16*mm - l_TRGT/2.; // from old copper cylinder
      G4Tubs* PGTube = new G4Tubs("PGTube", r_PGTube-t_PGTube, r_PGTube, l_PGTube/2., 0*deg, 360*deg);
      G4LogicalVolume* PGTubeLogic = new G4LogicalVolume(PGTube, fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"), "PGTube");
-     new G4PVPlacement(0, G4ThreeVector(0,0,centeroftube),PGTubeLogic,"PGTube",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,tubelocation),PGTubeLogic,"PGTube",fMyLogic,false,1);
      PGTubeLogic->SetVisAttributes(RedVisAtt);
 
      // 10 small polystyrene scintillator slices
      G4double l_PSS = 1*mm;
      G4double r_PSS = 1*cm;
-     G4double PSS_start = centeroftube+l_PGTube/2.-2*cm;
+     G4double PSS_start = tubelocation+l_PGTube/2.;
 
      G4Tubs* PSS1 = new G4Tubs("PSS1", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS1Logic = new G4LogicalVolume(PSS1, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS1");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start),PSS1Logic,"PSS1",fMyLogic,false,1);
-     PSS1Logic->SetVisAttributes(BlueVisAtt);
+     PSS1Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS2 = new G4Tubs("PSS2", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS2Logic = new G4LogicalVolume(PSS2, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS2");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+2*mm),PSS2Logic,"PSS2",fMyLogic,false,1);
-     PSS2Logic->SetVisAttributes(BlueVisAtt);
+     PSS2Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS3 = new G4Tubs("PSS3", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS3Logic = new G4LogicalVolume(PSS3, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS3");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+4*mm),PSS3Logic,"PSS3",fMyLogic,false,1);
-     PSS3Logic->SetVisAttributes(BlueVisAtt);
+     PSS3Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS4 = new G4Tubs("PSS4", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS4Logic = new G4LogicalVolume(PSS4, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS4");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+6*mm),PSS4Logic,"PSS4",fMyLogic,false,1);
-     PSS4Logic->SetVisAttributes(BlueVisAtt);
+     PSS4Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS5 = new G4Tubs("PSS5", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS5Logic = new G4LogicalVolume(PSS5, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS5");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+8*mm),PSS5Logic,"PSS5",fMyLogic,false,1);
-     PSS5Logic->SetVisAttributes(BlueVisAtt);
+     PSS5Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS6 = new G4Tubs("PSS6", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS6Logic = new G4LogicalVolume(PSS6, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS6");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+10*mm),PSS6Logic,"PSS6",fMyLogic,false,1);
-     PSS6Logic->SetVisAttributes(BlueVisAtt);
+     PSS6Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS7 = new G4Tubs("PSS7", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS7Logic = new G4LogicalVolume(PSS7, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS7");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+12*mm),PSS7Logic,"PSS7",fMyLogic,false,1);
-     PSS7Logic->SetVisAttributes(BlueVisAtt);
+     PSS7Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS8 = new G4Tubs("PSS8", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS8Logic = new G4LogicalVolume(PSS8, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS8");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+14*mm),PSS8Logic,"PSS8",fMyLogic,false,1);
-     PSS8Logic->SetVisAttributes(BlueVisAtt);
+     PSS8Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS9 = new G4Tubs("PSS9", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS9Logic = new G4LogicalVolume(PSS9, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS9");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+16*mm),PSS9Logic,"PSS9",fMyLogic,false,1);
-     PSS9Logic->SetVisAttributes(BlueVisAtt);
+     PSS9Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS10 = new G4Tubs("PSS10", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS10Logic = new G4LogicalVolume(PSS10, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS10");
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+18*mm),PSS10Logic,"PSS10",fMyLogic,false,1);
-     PSS10Logic->SetVisAttributes(BlueVisAtt);
-
+     PSS10Logic->SetVisAttributes(MagentaVisAtt);
+/*
      // Cone Cap
      G4double l_CONECAP = 2*cm;
      G4double r_CONECAP = 1.25*cm;
@@ -280,7 +280,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4LogicalVolume* ConeCapLogic = new G4LogicalVolume(ConeCap, fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"), "ConeCap");
      G4RotationMatrix cone_rotm = G4RotationMatrix();
      cone_rotm.rotateY(180*deg);
-     G4ThreeVector conelocation = G4ThreeVector(0,3*cm,centeroftube+l_PGTube/2.+l_CONECAP/2.);
+     G4ThreeVector conelocation = G4ThreeVector(0,3*cm,tubelocation+l_PGTube/2.+l_CONECAP/2.);
      G4Transform3D cone_transform = G4Transform3D(cone_rotm,conelocation);
      new G4PVPlacement(cone_transform,ConeCapLogic,"ConeCap",fMyLogic,false,1);
      ConeCapLogic->SetVisAttributes(RedVisAtt);
@@ -291,7 +291,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4LogicalVolume* SphereCapLogic = new G4LogicalVolume(SphereCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"SphereCap");
      G4RotationMatrix sphere_rotm = G4RotationMatrix();
      sphere_rotm.rotateX(90*deg);
-     G4ThreeVector spherelocation = G4ThreeVector(0,0,centeroftube+l_PGTube/2.);
+     G4ThreeVector spherelocation = G4ThreeVector(0,0,tubelocation+l_PGTube/2.);
      G4Transform3D sphere_transform = G4Transform3D(sphere_rotm,spherelocation);
      new G4PVPlacement(sphere_transform,SphereCapLogic,"SphereCap",fMyLogic,false,1);
      SphereCapLogic->SetVisAttributes(RedVisAtt);
@@ -302,7 +302,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4LogicalVolume* HollowSphereCapLogic = new G4LogicalVolume(HollowSphereCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"HollowSphereCap");
      G4RotationMatrix hollowsphere_rotm = G4RotationMatrix();
      hollowsphere_rotm.rotateX(90*deg);
-     G4ThreeVector hollowspherelocation = G4ThreeVector(0,-3*cm,centeroftube+l_PGTube/2.);
+     G4ThreeVector hollowspherelocation = G4ThreeVector(0,-3*cm,tubelocation+l_PGTube/2.);
      G4Transform3D hollowsphere_transform = G4Transform3D(hollowsphere_rotm,hollowspherelocation);
      new G4PVPlacement(hollowsphere_transform,HollowSphereCapLogic,"HollowSphereCap",fMyLogic,false,1);
      HollowSphereCapLogic->SetVisAttributes(RedVisAtt);
@@ -314,7 +314,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4LogicalVolume* ParaboloidCapLogic = new G4LogicalVolume(ParaboloidCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"ParaboloidCap");
      G4RotationMatrix paraboloid_rotm = G4RotationMatrix();
      paraboloid_rotm.rotateX(180*deg);
-     G4ThreeVector paraboloidlocation = G4ThreeVector(0, 6*cm, centeroftube+l_PGTube/2.+l_paraboloid/2.);
+     G4ThreeVector paraboloidlocation = G4ThreeVector(0, 6*cm, tubelocation+l_PGTube/2.+l_paraboloid/2.);
      G4Transform3D paraboloid_transform = G4Transform3D(paraboloid_rotm, paraboloidlocation);
      new G4PVPlacement(paraboloid_transform,ParaboloidCapLogic,"ParaboloidCap",fMyLogic,false,1);
      ParaboloidCapLogic->SetVisAttributes(RedVisAtt);
@@ -326,8 +326,9 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      const G4double zslices[] = {0*mm,7*mm,13*mm,19*mm,20*mm};
      G4Polycone* PolyconeCap = new G4Polycone("PolyconeCap",0*deg,360*deg,numberoflayers,zslices,rInner,rOuter);
      G4LogicalVolume* PolyconeCapLogic = new G4LogicalVolume(PolyconeCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"PolyconeCap");
-     new G4PVPlacement(0,G4ThreeVector(0,-6*cm,centeroftube+l_PGTube/2.),PolyconeCapLogic,"PolyconeCap",fMyLogic,false,1);
+     new G4PVPlacement(0,G4ThreeVector(0,-6*cm,tubelocation+l_PGTube/2.),PolyconeCapLogic,"PolyconeCap",fMyLogic,false,1);
      PolyconeCapLogic->SetVisAttributes(RedVisAtt);
+*/
  }
 
  //////////////////////////////////////////////////
