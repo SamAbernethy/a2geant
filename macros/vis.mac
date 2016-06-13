@@ -112,9 +112,9 @@
 #/vis/scene/add/volume layer2
 
 ## Middle Cu Cylinder
-#/vis/scene/add/volume CUMA
-#/vis/scene/add/volume CUMB
-#/vis/scene/add/volume CUMC
+/vis/scene/add/volume CUMA
+/vis/scene/add/volume CUMB
+/vis/scene/add/volume CUMC
 
 ## Inner SS Cylinder
 /vis/scene/add/volume SSIA
@@ -158,6 +158,7 @@
 
 ## Holding cell
 /vis/scene/add/volume PCell
+/vis/scene/add/volume ERing
 
 ## Plexiglass slices
 /vis/scene/add/volume PGSlice
@@ -169,18 +170,22 @@
 /vis/scene/add/volume PGSlice7
 /vis/scene/add/volume PGSlice8
 /vis/scene/add/volume PGSlice9
+/vis/scene/add/volume PGSlice10
+/vis/scene/add/volume PGSlice11
+/vis/scene/add/volume PGSlice12
+/vis/scene/add/volume PGSlice13
 
 ## Polystyrene scintillators
-#/vis/scene/add/volume PSS1
-#/vis/scene/add/volume PSS2
-#/vis/scene/add/volume PSS3
-#/vis/scene/add/volume PSS4
-#/vis/scene/add/volume PSS5
-#/vis/scene/add/volume PSS6
-#/vis/scene/add/volume PSS7
-#/vis/scene/add/volume PSS8
-#/vis/scene/add/volume PSS9
-#/vis/scene/add/volume PSS10
+/vis/scene/add/volume PSS1
+/vis/scene/add/volume PSS2
+/vis/scene/add/volume PSS3
+/vis/scene/add/volume PSS4
+/vis/scene/add/volume PSS5
+/vis/scene/add/volume PSS6
+/vis/scene/add/volume PSS7
+/vis/scene/add/volume PSS8
+/vis/scene/add/volume PSS9
+/vis/scene/add/volume PSS10
 
 ## Oddly shaped cap
 #/vis/scene/add/volume ConeCap
@@ -196,10 +201,10 @@
 
 ## Visual Aspects
 #/vis/viewer/set/sectionPlane on 0.1 0.0 0.0 cm 1.0 0.0 0.0
-#/vis/viewer/set/viewpointThetaPhi 60 20
-/vis/viewer/set/viewpointThetaPhi 90 0
-/vis/viewer/set/style wireframe
-#/vis/viewer/set/style surface
-/vis/scene/add/axes 0 0 0 10 mm
+/vis/viewer/set/viewpointThetaPhi 60 20
+#/vis/viewer/set/viewpointThetaPhi 90 0
+#/vis/viewer/set/style wireframe
+/vis/viewer/set/style surface
+#/vis/scene/add/axes 0 0 0 10 mm
 /vis/viewer/refresh
 /vis/viewer/flush
