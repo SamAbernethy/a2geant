@@ -209,19 +209,32 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  if (active == true)
  {
      // Plexiglass Tube
-     G4double l_PGTube = 140.*mm;
+     G4double l_PGTube = 160.*mm;
      G4double r_PGTube = 13.*mm; // diameter of 26 mm
      G4double t_PGTube = 2.9*mm; // such that inside is empty
      G4double tubelocation = l_PGTube/2. + 67*mm + 16*mm - l_TRGT/2.; // from old copper cylinder
+
      G4Tubs* PGTube = new G4Tubs("PGTube", r_PGTube-t_PGTube, r_PGTube, l_PGTube/2., 0*deg, 360*deg);
      G4LogicalVolume* PGTubeLogic = new G4LogicalVolume(PGTube, fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"), "PGTube");
      new G4PVPlacement(0, G4ThreeVector(0,0,tubelocation),PGTubeLogic,"PGTube",fMyLogic,false,1);
      PGTubeLogic->SetVisAttributes(RedVisAtt);
 
+     // Funky holding cell (unknown plastic, choosing G4_POLYETHYLENE for now)
+     G4double l_PCell = 20*mm;
+     G4double r_PCell = 13*mm;
+     G4double t_PCell = 2.9*mm;
+     G4double PCelllocation = tubelocation + l_PGTube/2. + l_PCell/2.;
+
+     G4Tubs* PCell = new G4Tubs("PCell",r_PCell-t_PCell,r_PCell,l_PCell/2.,0*deg,360*deg);
+     G4LogicalVolume* PCellLogic = new G4LogicalVolume(PCell,fNistManager->FindOrBuildMaterial("G4_POLYETHYLENE"), "PCell");
+     new G4PVPlacement(0,G4ThreeVector(0,0,PCelllocation),PCellLogic,"PCell",fMyLogic,false,1);
+     PCellLogic->SetVisAttributes(BlackVisAtt);
+
      // 10 small polystyrene scintillator slices
      G4double l_PSS = 1*mm;
      G4double r_PSS = 1*cm;
-     G4double PSS_start = tubelocation+l_PGTube/2.;
+     G4double PSS_start = tubelocation + l_PGTube/2. + l_PSS/2.;
+     G4double gap_PSS = 0.5*mm;
 
      G4Tubs* PSS1 = new G4Tubs("PSS1", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS1Logic = new G4LogicalVolume(PSS1, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS1");
@@ -230,49 +243,68 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
 
      G4Tubs* PSS2 = new G4Tubs("PSS2", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS2Logic = new G4LogicalVolume(PSS2, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS2");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+2*mm),PSS2Logic,"PSS2",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+(l_PSS+gap_PSS)),PSS2Logic,"PSS2",fMyLogic,false,1);
      PSS2Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS3 = new G4Tubs("PSS3", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS3Logic = new G4LogicalVolume(PSS3, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS3");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+4*mm),PSS3Logic,"PSS3",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+2*(l_PSS+gap_PSS)),PSS3Logic,"PSS3",fMyLogic,false,1);
      PSS3Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS4 = new G4Tubs("PSS4", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS4Logic = new G4LogicalVolume(PSS4, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS4");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+6*mm),PSS4Logic,"PSS4",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+3*(l_PSS+gap_PSS)),PSS4Logic,"PSS4",fMyLogic,false,1);
      PSS4Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS5 = new G4Tubs("PSS5", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS5Logic = new G4LogicalVolume(PSS5, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS5");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+8*mm),PSS5Logic,"PSS5",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+4*(l_PSS+gap_PSS)),PSS5Logic,"PSS5",fMyLogic,false,1);
      PSS5Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS6 = new G4Tubs("PSS6", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS6Logic = new G4LogicalVolume(PSS6, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS6");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+10*mm),PSS6Logic,"PSS6",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+5*(l_PSS+gap_PSS)),PSS6Logic,"PSS6",fMyLogic,false,1);
      PSS6Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS7 = new G4Tubs("PSS7", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS7Logic = new G4LogicalVolume(PSS7, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS7");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+12*mm),PSS7Logic,"PSS7",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+6*(l_PSS+gap_PSS)),PSS7Logic,"PSS7",fMyLogic,false,1);
      PSS7Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS8 = new G4Tubs("PSS8", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS8Logic = new G4LogicalVolume(PSS8, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS8");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+14*mm),PSS8Logic,"PSS8",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+7*(l_PSS+gap_PSS)),PSS8Logic,"PSS8",fMyLogic,false,1);
      PSS8Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS9 = new G4Tubs("PSS9", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS9Logic = new G4LogicalVolume(PSS9, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS9");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+16*mm),PSS9Logic,"PSS9",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+8*(l_PSS+gap_PSS)),PSS9Logic,"PSS9",fMyLogic,false,1);
      PSS9Logic->SetVisAttributes(MagentaVisAtt);
 
      G4Tubs* PSS10 = new G4Tubs("PSS10", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSS10Logic = new G4LogicalVolume(PSS10, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS10");
-     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+18*mm),PSS10Logic,"PSS10",fMyLogic,false,1);
+     new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+9*(l_PSS+gap_PSS)),PSS10Logic,"PSS10",fMyLogic,false,1);
      PSS10Logic->SetVisAttributes(MagentaVisAtt);
-/*
+
+     // small plexiglass slices
+     G4double l_PGSlice = 0.5*mm;
+     G4double r_PGSlice = 10*mm;
+     G4double t_PGSlice = 1*mm; // UNKNOWN, COMPLETE GUESS
+
+     G4Tubs* PGSlice = new G4Tubs("PGSlice",r_PGSlice-t_PGSlice,r_PGSlice,l_PGSlice/2.,0*deg,360*deg);
+     G4LogicalVolume* PGSliceLogic = new G4LogicalVolume(PGSlice,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"PGSlice");
+     PGSliceLogic->SetVisAttributes(PlexiVisAtt);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+l_PSS/2.+gap_PSS/2.),PGSliceLogic,"PGSlice",fMyLogic,false,1);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+3*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice2",fMyLogic,false,2);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+5*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice3",fMyLogic,false,3);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+7*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice4",fMyLogic,false,4);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+9*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice5",fMyLogic,false,5);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+11*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice6",fMyLogic,false,6);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+13*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice7",fMyLogic,false,7);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+15*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice8",fMyLogic,false,8);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+17*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice9",fMyLogic,false,9);
+
+     /*
      // Cone Cap
      G4double l_CONECAP = 2*cm;
      G4double r_CONECAP = 1.25*cm;
