@@ -13,12 +13,15 @@
 #include "G4TransportationManager.hh"
 #include "G4Paraboloid.hh"
 #include "G4Polycone.hh"
+#include "G4SDManager.hh"
 
 // Sam Abernethy, June 2016. Changing A2PolarizedTarget to include Active Target.
 
 /* Things needed:
+ * Implement exact dimensions
  * Add HeMix outside cell, inside cell, between scintillators?
  * What is the purpose of active target? Low energy recoil protons?
+ * Sensitive detector task: getting scintillators to record energy deposition
  * */
 /* ******************************************** CLASSES *********************************************
  * G4VisAttributes(G4Colour(red, green, blue, opacity))
@@ -166,7 +169,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4double t_PCellBase = 5*mm;
      G4double PCellBaselocation = PCelllocation - l_PCell/2. - l_PCellBase/2.;
      G4Tubs* PCellBase = new G4Tubs("PCellBase",r_PCellBase-t_PCellBase,r_PCellBase,l_PCellBase/2.,0*deg,360*deg);
-     G4LogicalVolume* PCellBaseLogic = new G4LogicalVolume(PCellBase,fNistManager->FindOrBuildMaterial("G4_POLYETHYLENE"),"PCellBase");
+     G4LogicalVolume* PCellBaseLogic = new G4LogicalVolume(PCellBase,fNistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE"),"PCellBase");
      new G4PVPlacement(0,G4ThreeVector(0,0,PCellBaselocation),PCellBaseLogic,"PCellBase",fMyLogic,false,1);
      PCellBaseLogic->SetVisAttributes(YellowVisAtt);
 
@@ -177,7 +180,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4Box* Cut = new G4Box("Cut",x_cut,y_cut,z_cut);
 
      G4SubtractionSolid* CutCell = new G4SubtractionSolid("CutCell",PCell,Cut,0,G4ThreeVector(0,0,l_PCell/2.));
-     G4LogicalVolume* PCellLogic = new G4LogicalVolume(CutCell,fNistManager->FindOrBuildMaterial("G4_POLYETHYLENE"), "PCell");
+     G4LogicalVolume* PCellLogic = new G4LogicalVolume(CutCell,fNistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE"), "PCell");
      new G4PVPlacement(0,G4ThreeVector(0,0,PCelllocation),PCellLogic,"PCell",fMyLogic,false,1);
      PCellLogic->SetVisAttributes(YellowVisAtt);
 
@@ -199,6 +202,17 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4Tubs* PSS = new G4Tubs("PSS1", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSSLogic = new G4LogicalVolume(PSS, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS");
      PSSLogic->SetVisAttributes(BlueVisAtt);
+
+     // ********************* MAKING IT A SENSITIVE DETECTOR
+
+     fNScintillators=10;
+       //Equivalent: PSSLogic = fPIDLogic
+       if (!fScintillatorSD){
+        G4SDManager* SDman = G4SDManager::GetSDMpointer();
+        fScintillatorSD = new A2SD("ScintillatorSD",fNScintillators);
+        SDman->AddNewDetector(fScintillatorSD);
+       }
+       PSSLogic->SetSensitiveDetector(fScintillatorSD);
 
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start),PSSLogic,"PSS1",fMyLogic,false,1);
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+(l_PSS+gap_PSS)),PSSLogic,"PSS2",fMyLogic,false,2);

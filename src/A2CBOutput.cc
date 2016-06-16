@@ -96,6 +96,13 @@ void A2CBOutput::SetBranches(){
   fTree->Branch("mposy",fmposy,"fmposy[fnmwpc]/F",basket);
   fTree->Branch("mposz",fmposz,"fmposz[fnmwpc]/F",basket);
   fTree->Branch("emwpc",femwpc,"femwpc[fnmwpc]/F",basket);
+
+  // scintillator branches
+  fTree->Branch("escintillators",fescintillators,"fescintillators[10]/F",basket);
+  fTree->Branch("tscintillators",ftscintillators,"ftscintillators[10]/F",basket);
+  fTree->Branch("iscintillators",fiscintillators,"fiscintillators[10]/I",basket);
+  fTree->Branch("scintillatorhits",&fscinthits,"fscinthits/I");
+
   //tof stuff
   if(fToFTot>0){
     fTree->Branch("ntof",&fntof,"fntof/I",basket);
@@ -158,6 +165,16 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl){
 	ftveto[i]=hit->GetTime()/ns;
 	fiveto[i]=hit->GetID();
       }
+    }
+    // sam abernethy scintillator stuff
+    if(hc->GetName()=="A2SDHitsScintillatorSD"){
+        fscinthits=hc_nhits;
+        for(Int_t i=0; i<hc_nhits; i++) {
+        A2Hit* hit=static_cast<A2Hit*>(hc->GetHit(i));
+        fescintillators[i]=hit->GetEdep()/GeV;
+        ftscintillators[i]=hit->GetTime()/ns;
+        fiscintillators[i]=hit->GetID();
+        }
     }
     if(hc->GetName().contains("A2MWPCSD")){
       // fnmwpc=hc_nhits;
