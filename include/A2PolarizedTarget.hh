@@ -4,6 +4,8 @@
 
 #include "A2Target.hh"
 #include "A2MagneticField.hh"
+#include "A2SD.hh"
+#include "A2Detector.hh"
 
 class A2PolarizedTarget: public  A2Target
 {
@@ -23,6 +25,9 @@ public:
 private:
   A2MagneticField* fMagneticField;
   G4String fTypeMagneticCoils;
+
+  A2SD* fScintillatorSD;
+  G4int fNScintillators;
 
 };
 #endif

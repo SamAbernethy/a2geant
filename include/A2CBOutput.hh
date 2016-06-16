@@ -14,6 +14,7 @@ const G4int MAXSIZE_NAI= 720;
 const G4int MAXSIZE_TAPS= 512;
 const G4int MAXSIZE_PID= 24;
 const G4int MAXSIZE_MWPC = 400;
+const G4int MAXSIZE_SCINTILLATORS = 10;
 
 class A2CBOutput 
 {
@@ -56,7 +57,13 @@ protected:
   Float_t ftctaps[MAXSIZE_TAPS];  //Time of hits in TAPS
   Float_t *fvertex;  //Vertex position
   Int_t fvhits;     //Number of hits in PID
- 
+  Int_t fscinthits; // number of hits in scintillators
+
+  // sam abernethy addition
+  Float_t fescintillators[MAXSIZE_SCINTILLATORS]; // energy deposited in scintillators
+  Float_t ftscintillators[MAXSIZE_SCINTILLATORS]; // time of hit in scintillators
+  Int_t fiscintillators[MAXSIZE_SCINTILLATORS]; // id number of the PID hits
+
   Int_t fnmwpc; //total no. wc hits
   Int_t fimwpc[MAXSIZE_MWPC]; //layer id of hit
   Float_t fmposx[MAXSIZE_MWPC]; //position of hit
