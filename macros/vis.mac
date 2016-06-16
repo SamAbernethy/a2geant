@@ -12,9 +12,9 @@
 #
 # Sets some default verbose
 #
-/control/verbose 2
+/control/verbose 0
 /control/saveHistory
-/run/verbose 2
+/run/verbose 0
 /vis/verbose 0
 #
 # create empty scene
@@ -69,8 +69,8 @@
 #/vis/viewer/set/viewpointThetaPhi 0. 0.
 #/vis/viewer/set/style surface
 #/vis/drawVolume
-#/vis/scene/endOfEventAction accumulate	
-#/tracking/storeTrajectory 1	
+#/vis/scene/endOfEventAction accumulate
+#/tracking/storeTrajectory 1
 #/vis/geometry/set/visibility CNIN 0 false
 #/vis/geometry/set/forceAuxEdgeVisible World -1 true
 #/vis/viewer/set/autoRefresh true
@@ -92,6 +92,8 @@
 ## DAWN commands
 /vis/open DAWNFILE
 
+/vis/viewer/set/autoRefresh false
+
 ## To draw everything
 #/vis/drawVolume
 
@@ -99,13 +101,13 @@
 /vis/scene/create
 
 ## Outer Cylinders
-#/vis/scene/add/volume CUO
-#/vis/scene/add/volume SSO
+/vis/scene/add/volume CUO
+/vis/scene/add/volume SSO
 
 ## Solenoidal Magnetic Coils
-#/vis/scene/add/volume NbTiC
-#/vis/scene/add/volume CUC
-#/vis/scene/add/volume EPC
+/vis/scene/add/volume NbTiC
+/vis/scene/add/volume CUC
+/vis/scene/add/volume EPC
 
 ## Saddle Magnetic Coils
 #/vis/scene/add/volume layer1
@@ -141,16 +143,18 @@
 /vis/scene/add/volume HEE
 /vis/scene/add/volume HEF
 
+#/vis/scene/add/volume HeMix
+
 ## Windows
-#/vis/scene/add/volume TIOW
-#/vis/scene/add/volume CUOW
-#/vis/scene/add/volume ALOW
-#/vis/scene/add/volume ALIW
-#/vis/scene/add/volume CUBA
-#/vis/scene/add/volume CUBB
-#/vis/scene/add/volume TIMW
-#/vis/scene/add/volume SSIW
-#/vis/scene/add/volume TIIW
+/vis/scene/add/volume TIOW
+/vis/scene/add/volume CUOW
+/vis/scene/add/volume ALOW
+/vis/scene/add/volume ALIW
+/vis/scene/add/volume CUBA
+/vis/scene/add/volume CUBB
+/vis/scene/add/volume TIMW
+/vis/scene/add/volume SSIW
+/vis/scene/add/volume TIIW
 
 ################## Active Target
 ## Plexiglass Tube
@@ -158,7 +162,8 @@
 
 ## Holding cell
 /vis/scene/add/volume PCell
-/vis/scene/add/volume ERing
+/vis/scene/add/volume PCellBase
+#/vis/scene/add/volume ERing
 
 ## Plexiglass slices
 /vis/scene/add/volume PGSlice
@@ -205,6 +210,26 @@
 #/vis/viewer/set/viewpointThetaPhi 90 0
 #/vis/viewer/set/style wireframe
 /vis/viewer/set/style surface
-#/vis/scene/add/axes 0 0 0 10 mm
-/vis/viewer/refresh
+#/vis/scene/add/axes 0 0 0 1 cm
+
+#### Trajectories
+/vis/scene/add/trajectories smooth rich
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+/vis/scene/add/hits
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/viewer/flush
+
+/vis/scene/endOfEventAction accumulate
+/vis/scene/endOfRunAction accumulate
+/vis/viewer/set/autoRefresh true
+/gun/particle gamma
+/gun/energy 500 MeV
+/gun/direction 0. 0. 1.
+/gun/position 0 0 -100. cm
+/run/beamOn 10
 /vis/viewer/flush
+
+

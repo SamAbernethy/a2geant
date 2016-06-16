@@ -1,5 +1,5 @@
 ####Use the crystal ball?
-/A2/det/useCB 1
+/A2/det/useCB 0
 #if the 3rd number in the next line is negative use old geometry,
 #if positive use new Prakhov geometry
 #the first two numbers give the upper and lower air gap between hemispheres
@@ -36,9 +36,10 @@
 #/A2/det/useTarget Solid
 #/A2/det/targetMaterial G4_Pb
 #/A2/det/targetMaterial G4_GRAPHITE
-#####Polarised target: Active (G4_POLYSTYRENE) or not (A2_HeButanol)
+#####Polarised target: Active (G4_POLYSTYRENE) or not (A2_HeButanol, A2_HeDButanol)
 /A2/det/useTarget Polarized
 #/A2/det/targetMaterial A2_HeButanol
+#/A2/det/targetMaterial A2_HeDButanol
 /A2/det/targetMaterial G4_POLYSTYRENE
 #/A2/det/targetMagneticCoils Solenoidal
 #/A2/det/targetMagneticCoils Saddle

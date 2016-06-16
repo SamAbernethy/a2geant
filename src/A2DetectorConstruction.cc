@@ -315,7 +315,22 @@ void A2DetectorConstruction::DefineMaterials()
   G4Material* A2_HeButanol=new G4Material("A2_HeButanol", density=0.6*g/cm3, ncomponents=2);
   A2_HeButanol->AddMaterial(A2_HeMix, fractionmass=0.094);
   A2_HeButanol->AddMaterial(A2_Butanol, fractionmass=0.906);
-  
+
+  // Deuterated butanol, C4D9OD (same as A2_Butanol but with deuterium)
+  G4Isotope* A2_D = new G4Isotope("A2_D", iz=1, n=1, a=2.01410178*g/mole);
+  G4Element* Deuterium=new G4Element("Deuterium", symbol="A2_D", ncomponents=1);
+  Deuterium->AddIsotope(A2_D, abundance=100*perCent);
+
+  G4Material* A2_DButanol = new G4Material("A2_Butanol",density=1.109*g/cm3,ncomponents=3); // from Martinez's Thesis, 2007
+  A2_DButanol->AddElement(NistManager->FindOrBuildElement(6),4);
+  A2_DButanol->AddElement(Deuterium,10);
+  A2_DButanol->AddElement(NistManager->FindOrBuildElement(8),1);
+
+  // Helium/DButanol Mixture (unknown density, copying A2_HeButanol) 60%/40%
+  G4Material* A2_HeDButanol = new G4Material("A2_HeDButanol",density=0.6*g/cm3,ncomponents=2);
+  A2_HeDButanol->AddMaterial(A2_HeMix,fractionmass=0.0776);
+  A2_HeDButanol->AddMaterial(A2_DButanol,fractionmass=0.9224);
+
 //Stainless steel (18% Cr, 10% Ni, 72% Fe):
   G4Material* A2_SS=new G4Material("A2_SS", density=8000.*kg/m3, ncomponents=3);
   A2_SS->AddElement(NistManager->FindOrBuildElement(24), fractionmass=0.18);
