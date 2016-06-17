@@ -23,10 +23,6 @@
  * What is the purpose of active target? Low energy recoil protons?
  * */
 /* ******************************************** CLASSES *********************************************
- * G4VisAttributes(G4Colour(red, green, blue, opacity))
- * red, green, blue on scale from 0 to 1
- * opacity set to 1 but can be changed
- *
  * G4Tubs("Name", fRMin, fRMax, fDz, fSPhi, fDPhi) -- Tube/Cylinder
  * fRMin = inner radius. If inner radius is 0, tube is filled cylinder.
  * fRMax = outer radius
@@ -52,20 +48,6 @@
  * pSolidA, pSolidB = G4Tubs or G4Box, for example -- shape or volume created
  * Subtraction A - B, meaning B is subtracted from A.
  * */
-/* *************************************** ORIGINAL COMMENTS ****************************************
- * // Magnetic field moved from A2DetectorConstruction dglazier
- * static G4bool fieldIsInitialized = false;
- * if(!fieldIsInitialized) {
- * fMagneticField = new A2MagneticField();
- * G4FieldManager* fieldMgr = G4TransportationManager::GetTransportationManager()->GetFieldManager();
- * fieldMgr->SetDetectorField(fMagneticField);
- * fieldMgr->CreateChordFinder(fMagneticField);
- * fieldIsInitialized = true;}
- *
- * There are 2 approximations in the target geometries:
- * When the tubes change thickness, there is no slope joining the different thicknesses.
- * When the ends of the tubes are rounded, this is approximated as a straight 90*degree cylinder.
- * l = length, r = radius, t = thickness.*/
 
 A2PolarizedTarget::A2PolarizedTarget()
 {
@@ -109,7 +91,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  if (!fMaterial) {G4cerr << "No target material chosen. Please add in DetectorSetup.mac." << G4endl; exit(1);}
  else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("A2_HeButanol")) {G4cout << "Polarized Target (A2_HeButanol) chosen." << G4endl;}
  else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("A2_HeDButanol")) {G4cout << "Polarized Target (A2_HeDButanol) chosen." << G4endl;}
- else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("G4_POLYSTYRENE")) {G4cout << "Polarized Active Target (G4_POLYSTYRENE) chosen." << G4endl; active = true;}
+ else if (fMaterial == G4NistManager::Instance()->FindOrBuildMaterial("G4_POLYSTYRENE")) {G4cout << "Active Target (G4_POLYSTYRENE) chosen." << G4endl; active = true;}
  else {G4cerr << "Target material incorrectly chosen. Please change in DetectorSetup.mac." << G4endl; exit(1);}
 
  fMotherLogic=MotherLogic;
@@ -144,10 +126,10 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
 
  if (active == true)
  {
-     // Plexiglass Tube
+     // Plexiglass Tube:
      G4double l_PGTube = 160.*mm; // length of plexiglass tube
      G4double r_PGTube = 13.*mm; // radius (diameter of 26 mm)
-     G4double t_PGTube = 2.9*mm; // thickness (to give inside diameter of 20.2 mm)
+     G4double t_PGTube = 3.*mm; // thickness (to give inside diameter of 20 mm)
      G4double tubelocation = l_PGTube/2. + 67*mm + 16*mm - l_TRGT/2.; // from old copper cylinder. Should be changed
 
      G4Tubs* PGTube = new G4Tubs("PGTube", r_PGTube-t_PGTube, r_PGTube, l_PGTube/2., 0*deg, 360*deg);
@@ -155,27 +137,26 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      new G4PVPlacement(0, G4ThreeVector(0,0,tubelocation),PGTubeLogic,"PGTube",fMyLogic,false,1);
      PGTubeLogic->SetVisAttributes(LightGreyVisAtt);
 
-     // Holding cell (unknown plastic, choosing G4_POLYETHYLENE for now)
-     G4double l_PCell = 20*mm; // length of plastic cell
-     G4double r_PCell = 13*mm; // radius of plastic cell
-     G4double t_PCell = 2.9*mm; // thickness of plastic cell
-     G4double PCelllocation = tubelocation + l_PGTube/2. + l_PCell/2.;
-     G4Tubs* PCell = new G4Tubs("PCell",r_PCell-t_PCell,r_PCell,l_PCell/2.,0*deg,360*deg);
-
-     // Base of holding cell
-     G4double l_PCellBase = 5*mm;
+     // Holding cell (Plastic Vinyltoluene)
+     G4double l_PCellBase = 3*mm;
      G4double r_PCellBase = 13*mm;
-     G4double t_PCellBase = 5*mm;
-     G4double PCellBaselocation = PCelllocation - l_PCell/2. - l_PCellBase/2.;
+     G4double t_PCellBase = 4*mm;
+     G4double PCellBaselocation = tubelocation + l_PGTube/2. + l_PCellBase/2.;
      G4Tubs* PCellBase = new G4Tubs("PCellBase",r_PCellBase-t_PCellBase,r_PCellBase,l_PCellBase/2.,0*deg,360*deg);
      G4LogicalVolume* PCellBaseLogic = new G4LogicalVolume(PCellBase,fNistManager->FindOrBuildMaterial("G4_PLASTIC_SC_VINYLTOLUENE"),"PCellBase");
      new G4PVPlacement(0,G4ThreeVector(0,0,PCellBaselocation),PCellBaseLogic,"PCellBase",fMyLogic,false,1);
      PCellBaseLogic->SetVisAttributes(YellowVisAtt);
 
+     G4double l_PCell = 17*mm; // length of plastic cell
+     G4double r_PCell = 13*mm; // radius of plastic cell
+     G4double t_PCell = 2.9*mm; // thickness of plastic cell, inner diameter of 20.2 mm
+     G4double PCelllocation = tubelocation + l_PGTube/2. + l_PCellBase + l_PCell/2.;
+     G4Tubs* PCell = new G4Tubs("PCell",r_PCell-t_PCell,r_PCell,l_PCell/2.,0*deg,360*deg);
+
      // Box shaped cut in the holding cell and epoxy layer
-     G4double x_cut = 20*mm;
-     G4double y_cut = 2*mm;
-     G4double z_cut = 10*mm;
+     G4double x_cut = 20*mm; // unsure
+     G4double y_cut = 2*mm; // correct
+     G4double z_cut = 10*mm; // unsure
      G4Box* Cut = new G4Box("Cut",x_cut,y_cut,z_cut);
 
      G4SubtractionSolid* CutCell = new G4SubtractionSolid("CutCell",PCell,Cut,0,G4ThreeVector(0,0,l_PCell/2.));
@@ -184,7 +165,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      PCellLogic->SetVisAttributes(YellowVisAtt);
 
      // Epoxy ring
-     G4double l_ERing = 20*mm; // length of epoxy ring
+     G4double l_ERing = l_PCell; // length of epoxy ring
      G4double r_ERing = 10.1*mm; // radius of epoxy ring
      G4double t_ERing = 0.1*mm; // thickness of epoxy ring
      G4Tubs* ERing = new G4Tubs("ERing",r_ERing-t_ERing,r_ERing,l_ERing/2.,0*deg,360*deg);
@@ -193,17 +174,16 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      new G4PVPlacement(0,G4ThreeVector(0,0,PCelllocation),ERingLogic,"ERing",fMyLogic,false,1);
      ERingLogic->SetVisAttributes(MagentaVisAtt);
 
-     // Polystyrene scintillator slices
+     // Polystyrene scintillator slice
      G4double l_PSS = 1*mm; // length of slice
      G4double r_PSS = 1*cm; // radius of slice
-     G4double PSS_start = tubelocation + l_PGTube/2. + l_PSS/2. + 2*mm; // 2 mm for the plexiglass loops
+     G4double PSS_start = tubelocation + l_PGTube/2. + l_PCellBase + l_PSS/2. + 2*mm; // 2 mm for the plexiglass loops
      G4double gap_PSS = 0.5*mm; // gap between slices
      G4Tubs* PSS = new G4Tubs("PSS1", 0, r_PSS, l_PSS/2., 0*deg, 360*deg);
      G4LogicalVolume* PSSLogic = new G4LogicalVolume(PSS, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS");
      PSSLogic->SetVisAttributes(BlueVisAtt);
 
      // MAKING IT A SENSITIVE DETECTOR
-
      fNScintillators=10;
      if (!fScintillatorSD){
         G4SDManager* SDman = G4SDManager::GetSDMpointer();
@@ -212,6 +192,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      }
      PSSLogic->SetSensitiveDetector(fScintillatorSD);
 
+     // Ten of them
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start),PSSLogic,"PSS1",fMyLogic,false,1);
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+(l_PSS+gap_PSS)),PSSLogic,"PSS2",fMyLogic,false,2);
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+2*(l_PSS+gap_PSS)),PSSLogic,"PSS3",fMyLogic,false,3);
@@ -223,16 +204,16 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+8*(l_PSS+gap_PSS)),PSSLogic,"PSS9",fMyLogic,false,9);
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+9*(l_PSS+gap_PSS)),PSSLogic,"PSS10",fMyLogic,false,10);
 
-     // Plexiglass slices
+     // Plexiglass slice
      G4double l_PGSlice = 0.5*mm; // length of slice
      G4double r_PGSlice = 10*mm; // radius of slice
-     G4double t_PGSlice = 1*mm; // thickness of slice (UNKNOWN, COMPLETE GUESS)
+     G4double t_PGSlice = 1*mm; // thickness of slice
      G4Tubs* PGSlice = new G4Tubs("PGSlice",r_PGSlice-t_PGSlice,r_PGSlice,l_PGSlice/2.,0*deg,360*deg);
      G4LogicalVolume* PGSliceLogic = new G4LogicalVolume(PGSlice,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"PGSlice");
      PGSliceLogic->SetVisAttributes(LightGreyVisAtt);
 
      // Nine of them between scintillators
-     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+l_PSS/2.+gap_PSS/2.),PGSliceLogic,"PGSlice",fMyLogic,false,1);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+l_PSS/2.+gap_PSS/2.),PGSliceLogic,"PGSlice1",fMyLogic,false,1);
      new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+3*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice2",fMyLogic,false,2);
      new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+5*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice3",fMyLogic,false,3);
      new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+7*(l_PSS/2.+gap_PSS/2.)),PGSliceLogic,"PGSlice4",fMyLogic,false,4);
@@ -249,16 +230,41 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start-(l_PSS/2.+gap_PSS/2.)-3*l_PGSlice),PGSliceLogic,"PGSlice13",fMyLogic,false,13);
 
      // Helium between plexiglass tube and cylinder
-     G4double l_HeMix = 180*mm;
+     G4double l_HeMix = l_PGTube + l_PCellBase + l_PCell;
      G4double r_HeMix = 19.5*mm;
      G4double t_HeMix = r_HeMix-r_PGTube;
-     G4double HeMixlocation = tubelocation + l_PCell/2.;
+     G4double HeMixlocation = tubelocation + l_PCell/2. + l_PCellBase/2.;
      G4Tubs* HeMix=new G4Tubs("HeMix",r_HeMix-t_HeMix,r_HeMix,l_HeMix/2.,0*deg,360*deg);
      G4LogicalVolume* HeMixLogic=new G4LogicalVolume(HeMix,fNistManager->FindOrBuildMaterial("A2_HeMix"),"HeMix");
      new G4PVPlacement(0,G4ThreeVector(0,0,HeMixlocation),HeMixLogic,"HeMix",fMyLogic,false,1);
      HeMixLogic->SetVisAttributes(WhiteVisAtt);
 
-     /* Caps
+     // Helium between scintillators
+     G4double l_HeTarget = l_PGSlice;
+     G4double r_HeTarget = r_PGSlice - t_PGSlice;
+     G4Tubs* HeTarget = new G4Tubs("HeInTarget",0,r_HeTarget,l_HeTarget/2.,0*deg,360*deg);
+     G4LogicalVolume* HeTargetLogic = new G4LogicalVolume(HeTarget,fNistManager->FindOrBuildMaterial("A2_HeMix"),"HeTarget");
+     HeTargetLogic->SetVisAttributes(WhiteVisAtt);
+
+     // Nine of them between scintillators
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+l_PSS/2.+gap_PSS/2.),HeTargetLogic,"HeTarget1",fMyLogic,false,1);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+3*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget2",fMyLogic,false,2);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+5*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget3",fMyLogic,false,3);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+7*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget4",fMyLogic,false,4);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+9*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget5",fMyLogic,false,5);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+11*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget6",fMyLogic,false,6);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+13*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget7",fMyLogic,false,7);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+15*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget8",fMyLogic,false,8);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start+17*(l_PSS/2.+gap_PSS/2.)),HeTargetLogic,"HeTarget9",fMyLogic,false,9);
+
+     // Helium before scintillators
+     G4double l_HeBefore = 5*mm;
+     G4Tubs* HeBefore = new G4Tubs("HeBefore",0,r_HeTarget,l_HeBefore/2.,0*deg,360*deg);
+     G4LogicalVolume* HeBeforeLogic = new G4LogicalVolume(HeBefore,fNistManager->FindOrBuildMaterial("A2_HeMix"),"HeBefore");
+     HeBeforeLogic->SetVisAttributes(WhiteVisAtt);
+     new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start - l_PSS/2. - l_HeBefore/2.),HeBeforeLogic,"HeBefore",fMyLogic,false,1);
+
+     /* Oddly shaped caps (Not used in current active target)
      // Cone Cap
      G4double l_CONECAP = 2*cm;
      G4double r_CONECAP = 1.25*cm;
@@ -410,6 +416,14 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4LogicalVolume* BTRGTLogic=new G4LogicalVolume(BTRGT,fMaterial,"BTRGT"); // changed from A2_HeButanol to fMaterial, to allow A2_lD2
      new G4PVPlacement(0,G4ThreeVector(0,0,(l_BTRGT/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),BTRGTLogic,"BTRGT",fMyLogic,false,1);
      BTRGTLogic->SetVisAttributes(MagentaVisAtt);
+
+     // Inner Ti window:
+     G4double r_TIIW = 10.0*mm;
+     G4double t_TIIW = 0.02*mm;
+     G4Tubs* TIIW=new G4Tubs("TIIW",0,r_TIIW,t_TIIW/2,0*deg,360*deg);
+     G4LogicalVolume* TIIWLogic=new G4LogicalVolume(TIIW,fNistManager->FindOrBuildMaterial("G4_Ti"),"TIIW");
+     new G4PVPlacement(0,G4ThreeVector(0,0,(t_TIIW/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),TIIWLogic,"TIIW",fMyLogic,false,1);
+     TIIWLogic->SetVisAttributes(BlueVisAtt);
 
      //////////////////////////////////////////////////
      /// Helium between Inner SS and Cu Cylinders
@@ -607,14 +621,6 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  G4LogicalVolume* SSIWLogic=new G4LogicalVolume(SSIW,fNistManager->FindOrBuildMaterial("A2_SS"),"SSIW");
  new G4PVPlacement(0,G4ThreeVector(0,0,(-t_SSIW/2 + 267*mm - l_TRGT/2.)),SSIWLogic,"SSIW",fMyLogic,false,1);
  SSIWLogic->SetVisAttributes(SSVisAtt);
-
- // Inner Ti window:
- G4double r_TIIW = 10.0*mm;
- G4double t_TIIW = 0.02*mm;
- G4Tubs* TIIW=new G4Tubs("TIIW",0,r_TIIW,t_TIIW/2,0*deg,360*deg);
- G4LogicalVolume* TIIWLogic=new G4LogicalVolume(TIIW,fNistManager->FindOrBuildMaterial("G4_Ti"),"TIIW");
- new G4PVPlacement(0,G4ThreeVector(0,0,(t_TIIW/2 + 11.5*mm + 231.5*mm - l_TRGT/2.)),TIIWLogic,"TIIW",fMyLogic,false,1);
- TIIWLogic->SetVisAttributes(BlueVisAtt);
 
  //////////////////////////////////////////////////
  /// Magnetic Field: Solenoidal or Saddle

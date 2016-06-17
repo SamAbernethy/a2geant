@@ -101,26 +101,26 @@
 /vis/scene/create
 
 ## Outer Cylinders
-#/vis/scene/add/volume CUO
-#/vis/scene/add/volume SSO
+/vis/scene/add/volume CUO
+/vis/scene/add/volume SSO
 
 ## Solenoidal Magnetic Coils
-#/vis/scene/add/volume NbTiC
-#/vis/scene/add/volume CUC
-#/vis/scene/add/volume EPC
+/vis/scene/add/volume NbTiC
+/vis/scene/add/volume CUC
+/vis/scene/add/volume EPC
 
 ## Saddle Magnetic Coils
 #/vis/scene/add/volume layer1
 #/vis/scene/add/volume layer2
 
 ## Middle Cu Cylinder
-#/vis/scene/add/volume CUMA
-#/vis/scene/add/volume CUMB
-#/vis/scene/add/volume CUMC
+/vis/scene/add/volume CUMA
+/vis/scene/add/volume CUMB
+/vis/scene/add/volume CUMC
 
 ## Inner SS Cylinder
-#/vis/scene/add/volume SSIA
-#/vis/scene/add/volume SSIB
+/vis/scene/add/volume SSIA
+/vis/scene/add/volume SSIB
 
 ## Inner Cu Cylinder
 /vis/scene/add/volume CUIA
@@ -143,18 +143,16 @@
 /vis/scene/add/volume HEE
 /vis/scene/add/volume HEF
 
-#/vis/scene/add/volume HeMix
-
 ## Windows
-#/vis/scene/add/volume TIOW
-#/vis/scene/add/volume CUOW
-#/vis/scene/add/volume ALOW
-#/vis/scene/add/volume ALIW
-#/vis/scene/add/volume CUBA
-#/vis/scene/add/volume CUBB
-#/vis/scene/add/volume TIMW
-#/vis/scene/add/volume SSIW
-#/vis/scene/add/volume TIIW
+/vis/scene/add/volume TIOW
+/vis/scene/add/volume CUOW
+/vis/scene/add/volume ALOW
+/vis/scene/add/volume ALIW
+/vis/scene/add/volume CUBA
+/vis/scene/add/volume CUBB
+/vis/scene/add/volume TIMW
+/vis/scene/add/volume SSIW
+/vis/scene/add/volume TIIW
 
 ################## Active Target
 ## Plexiglass Tube
@@ -163,10 +161,10 @@
 ## Holding cell
 /vis/scene/add/volume PCell
 /vis/scene/add/volume PCellBase
-#/vis/scene/add/volume ERing
+/vis/scene/add/volume ERing
 
 ## Plexiglass slices
-/vis/scene/add/volume PGSlice
+/vis/scene/add/volume PGSlice1
 /vis/scene/add/volume PGSlice2
 /vis/scene/add/volume PGSlice3
 /vis/scene/add/volume PGSlice4
@@ -179,6 +177,19 @@
 /vis/scene/add/volume PGSlice11
 /vis/scene/add/volume PGSlice12
 /vis/scene/add/volume PGSlice13
+
+## Helium between slices
+/vis/scene/add/volume HeTarget1
+/vis/scene/add/volume HeTarget2
+/vis/scene/add/volume HeTarget3
+/vis/scene/add/volume HeTarget4
+/vis/scene/add/volume HeTarget5
+/vis/scene/add/volume HeTarget6
+/vis/scene/add/volume HeTarget7
+/vis/scene/add/volume HeTarget8
+/vis/scene/add/volume HeTarget9
+/vis/scene/add/volume HeBefore
+/vis/scene/add/volume HeMix
 
 ## Polystyrene scintillators
 /vis/scene/add/volume PSS1
@@ -206,29 +217,29 @@
 
 ## Visual Aspects
 #/vis/viewer/set/sectionPlane on 0.1 0.0 0.0 cm 1.0 0.0 0.0
-/vis/viewer/set/viewpointThetaPhi 60 20
+/vis/viewer/set/viewpointThetaPhi 70 20
 #/vis/viewer/set/viewpointThetaPhi 90 0
 #/vis/viewer/set/style wireframe
 /vis/viewer/set/style surface
 #/vis/scene/add/axes 0 0 0 1 cm
 
 #### Trajectories
-/vis/scene/add/trajectories smooth rich
-/vis/modeling/trajectories/create/drawByCharge
-/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
-/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
-/vis/scene/add/hits
+#/vis/scene/add/trajectories smooth rich
+#/vis/modeling/trajectories/create/drawByCharge
+#/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+#/vis/scene/add/hits
 #/vis/filtering/trajectories/create/particleFilter
 #/vis/filtering/trajectories/particleFilter-0/add gamma
 #/vis/viewer/flush
 
-/vis/scene/endOfEventAction accumulate
-/vis/scene/endOfRunAction accumulate
-/vis/viewer/set/autoRefresh true
-/gun/particle gamma
-/gun/energy 500 MeV
-/gun/direction 0. 0. 1.
-/gun/position 0 0 -100. cm
+#/vis/scene/endOfEventAction accumulate
+#/vis/scene/endOfRunAction accumulate
+#/vis/viewer/set/autoRefresh true
+#/gun/particle gamma
+#/gun/energy 500 MeV
+#/gun/direction 0. 0. 1.
+#/gun/position 0 0 -100. cm
 #/run/beamOn 10
 /vis/viewer/flush
 
