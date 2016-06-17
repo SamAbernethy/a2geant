@@ -21,7 +21,6 @@
  * Implement exact dimensions
  * Add HeMix outside cell, inside cell, between scintillators?
  * What is the purpose of active target? Low energy recoil protons?
- * Sensitive detector task: getting scintillators to record energy deposition
  * */
 /* ******************************************** CLASSES *********************************************
  * G4VisAttributes(G4Colour(red, green, blue, opacity))
@@ -203,16 +202,15 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4LogicalVolume* PSSLogic = new G4LogicalVolume(PSS, fNistManager->FindOrBuildMaterial("G4_POLYSTYRENE"), "PSS");
      PSSLogic->SetVisAttributes(BlueVisAtt);
 
-     // ********************* MAKING IT A SENSITIVE DETECTOR
+     // MAKING IT A SENSITIVE DETECTOR
 
      fNScintillators=10;
-       //Equivalent: PSSLogic = fPIDLogic
-       if (!fScintillatorSD){
+     if (!fScintillatorSD){
         G4SDManager* SDman = G4SDManager::GetSDMpointer();
         fScintillatorSD = new A2SD("ScintillatorSD",fNScintillators);
         SDman->AddNewDetector(fScintillatorSD);
-       }
-       PSSLogic->SetSensitiveDetector(fScintillatorSD);
+     }
+     PSSLogic->SetSensitiveDetector(fScintillatorSD);
 
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start),PSSLogic,"PSS1",fMyLogic,false,1);
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start+(l_PSS+gap_PSS)),PSSLogic,"PSS2",fMyLogic,false,2);

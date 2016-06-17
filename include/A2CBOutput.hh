@@ -57,12 +57,15 @@ protected:
   Float_t ftctaps[MAXSIZE_TAPS];  //Time of hits in TAPS
   Float_t *fvertex;  //Vertex position
   Int_t fvhits;     //Number of hits in PID
-  Int_t fscinthits; // number of hits in scintillators
 
-  // sam abernethy addition
-  Float_t fescintillators[MAXSIZE_SCINTILLATORS]; // energy deposited in scintillators
-  Float_t ftscintillators[MAXSIZE_SCINTILLATORS]; // time of hit in scintillators
-  Int_t fiscintillators[MAXSIZE_SCINTILLATORS]; // id number of the PID hits
+  // active target scintillators
+  Int_t fscinthits; // number of hits in scintillators
+  Float_t fescint[MAXSIZE_SCINTILLATORS]; // energy deposited in scintillators
+  Float_t ftscint[MAXSIZE_SCINTILLATORS]; // time of hit in scintillators
+  Int_t fiscint[MAXSIZE_SCINTILLATORS]; // id number of the PID hits
+  Float_t fscintposx[MAXSIZE_SCINTILLATORS]; // x position
+  Float_t fscintposy[MAXSIZE_SCINTILLATORS]; // y position
+  Float_t fscintposz[MAXSIZE_SCINTILLATORS]; // z position
 
   Int_t fnmwpc; //total no. wc hits
   Int_t fimwpc[MAXSIZE_MWPC]; //layer id of hit
