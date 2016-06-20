@@ -102,9 +102,9 @@ void A2CBOutput::SetBranches(){
   fTree->Branch("escint",fescint,"fescint[fscinthits]/F",basket);
   fTree->Branch("tscint",ftscint,"ftscint[fscinthits]/F",basket);
   fTree->Branch("iscint",fiscint,"fiscint[fscinthits]/I",basket);
-  fTree->Branch("xposition",fscintposx,"fscintposx[fscinthits]/F");
-  fTree->Branch("yposition",fscintposy,"fscintposy[fscinthits]/F");
-  fTree->Branch("zposition",fscintposz,"fscintposz[fscinthits]/F");
+  fTree->Branch("xposition",fscintposx,"fscintposx[fscinthits]/F", basket);
+  fTree->Branch("yposition",fscintposy,"fscintposy[fscinthits]/F",basket);
+  fTree->Branch("zposition",fscintposz,"fscintposz[fscinthits]/F",basket);
 
   //tof stuff
   if(fToFTot>0){

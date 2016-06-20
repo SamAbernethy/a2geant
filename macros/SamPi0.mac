@@ -29,10 +29,10 @@
 #give the indexes of the particles to be tracked
 #(have a look at the branch names in the input file)
 /A2/generator/Track 1
-/A2/generator/Track 2
 /A2/generator/Track 3
+/A2/generator/Track 4
 #Open the file and set up the ntuple for reading
 /A2/generator/InputFile evgen/2cm/pi0_p_250_in.root
 #####Output
 #Open the output file for writing
-/A2/event/setOutputFile out/2cm/pi0_p_activetarget.root
+/A2/event/setOutputFile out/2cm/250MeVpi0test.root
