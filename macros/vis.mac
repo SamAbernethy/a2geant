@@ -1,4 +1,3 @@
-#
 #####Pre-Initialisation
 #Choose a physics list, for a full listing type /A2/physics/ListPhysics
 
@@ -6,92 +5,23 @@
 
 ####Initialise
 /run/initialize
+/A2/generator/Seed 1111111
 
-#
-# Sets some default verbose
-#
 /control/verbose 0
 /control/saveHistory
 /run/verbose 0
 /vis/verbose 0
-#
-# create empty scene
-#
-#/vis/scene/create
-#
-# Create a scene handler for a specific graphics system
-# (Edit the next line(s) to choose another graphic system)
-#
-# Use this open statement to get an .eps and .prim files
-# suitable for viewing in DAWN.
-#/vis/open DAWNFILE
-#
-# Use this open statement instead for OpenGL in immediate mode.
-#/vis/open OGLIXm
-#/vis/open RayTracer
-#/vis/open ATree
-#
-# Use this open statement instead to get a HepRep version 1 file
-# suitable for viewing in WIRED.
-#/vis/open HepRepFile
-#
-# Use this open statement instead to get a HepRep version 2 file
-# suitable for viewing in WIRED.
-#/vis/open HepRepXML
-#
-# Output an empty detector
-#/vis/viewer/flush
-#
-# for drawing the tracks
-# (if too many tracks cause core dump => storeTrajectory 0)
-#
-#/tracking/storeTrajectory 1
-#/vis/scene/endOfEventAction accumulate
-#
-# At end of each run, an automatic flush causes graphical output.
-#/run/beamOn 1
-# When you exit Geant4, you will find a file called scene-0.heprep.zip.
-# Unzipping this will give you three separate HepRep files suitable for
-# viewing in WIRED.
-# The first file will contain just detector geometry.
-# The second file will contain the detector plus one event.
-# The third file will contain the detector plus ten events.
-#/vis/open OGLI
-#/vis/open OGL
-#/vis/open OGLIX
-#/vis/open DAWNFILE
-#/vis/scene/create 
-#/vis/viewer/reset
-#/vis/viewer/zoom 1.
-#/vis/viewer/set/viewpointThetaPhi 130. 40.
-#/vis/viewer/set/viewpointThetaPhi 0. 0.
-#/vis/viewer/set/style surface
-#/vis/drawVolume
-#/vis/scene/endOfEventAction accumulate
-#/tracking/storeTrajectory 1
-#/vis/geometry/set/visibility CNIN 0 false
-#/vis/geometry/set/forceAuxEdgeVisible World -1 true
-#/vis/viewer/set/autoRefresh true
-#/vis/verbose warnings
-   
-#/gun/particle pi-
-#/gun/energy 3 MeV
-#/particle/select kaon+
-#/particle/process/inactivate 3
-#for checking CCUT
-#/gun/direction 0. 0. 1
-#/gun/position 0 0 0
 
 ## DAWN commands
-/vis/open DAWNFILE
+#/vis/open DAWNFILE
 
-/vis/viewer/set/autoRefresh false
+#/vis/viewer/set/autoRefresh false
 
 ## To draw everything
 #/vis/drawVolume
 
 ## To draw individual parts
-/vis/scene/create
+#/vis/scene/create
 
 ## Outer Cylinders
 #/vis/scene/add/volume CUO
@@ -152,35 +82,35 @@
 #/vis/scene/add/volume PGTube
 
 ## Holding cell
-/vis/scene/add/volume PCell
-/vis/scene/add/volume PCellBase
-/vis/scene/add/volume ERing
+#/vis/scene/add/volume PCell
+#/vis/scene/add/volume PCellBase
+#/vis/scene/add/volume ERing
 
 ## Plexiglass slices
-/vis/scene/add/volume PGSlice1
-/vis/scene/add/volume PGSlice2
-/vis/scene/add/volume PGSlice3
-/vis/scene/add/volume PGSlice4
-/vis/scene/add/volume PGSlice5
-/vis/scene/add/volume PGSlice6
-/vis/scene/add/volume PGSlice7
-/vis/scene/add/volume PGSlice8
-/vis/scene/add/volume PGSlice9
-/vis/scene/add/volume PGSlice10
-/vis/scene/add/volume PGSlice11
-/vis/scene/add/volume PGSlice12
-/vis/scene/add/volume PGSlice13
+#/vis/scene/add/volume PGSlice1
+#/vis/scene/add/volume PGSlice2
+#/vis/scene/add/volume PGSlice3
+#/vis/scene/add/volume PGSlice4
+#/vis/scene/add/volume PGSlice5
+#/vis/scene/add/volume PGSlice6
+#/vis/scene/add/volume PGSlice7
+#/vis/scene/add/volume PGSlice8
+#/vis/scene/add/volume PGSlice9
+#/vis/scene/add/volume PGSlice10
+#/vis/scene/add/volume PGSlice11
+#/vis/scene/add/volume PGSlice12
+#/vis/scene/add/volume PGSlice13
 
 ## Helium between slices
-/vis/scene/add/volume HeTarget1
-/vis/scene/add/volume HeTarget2
-/vis/scene/add/volume HeTarget3
-/vis/scene/add/volume HeTarget4
-/vis/scene/add/volume HeTarget5
-/vis/scene/add/volume HeTarget6
-/vis/scene/add/volume HeTarget7
-/vis/scene/add/volume HeTarget8
-/vis/scene/add/volume HeTarget9
+#/vis/scene/add/volume HeTarget1
+#/vis/scene/add/volume HeTarget2
+#/vis/scene/add/volume HeTarget3
+#/vis/scene/add/volume HeTarget4
+#/vis/scene/add/volume HeTarget5
+#/vis/scene/add/volume HeTarget6
+#/vis/scene/add/volume HeTarget7
+#/vis/scene/add/volume HeTarget8
+#/vis/scene/add/volume HeTarget9
 #/vis/scene/add/volume HeBefore
 #/vis/scene/add/volume HeMix
 
@@ -199,34 +129,60 @@
 ## To draw all of the target
 #/vis/scene/add/volume TRGT
 
-/vis/sceneHandler/attach
+#/vis/sceneHandler/attach
+
+#/A2/physics/SetRegion CB
+#/A2/physics/RegionCut  0.1 mm
+#/A2/physics/SetRegion TAPS
+#/A2/physics/RegionCut  0.1 mm
+#/A2/physics/SetRegion TAPSV
+#/A2/physics/RegionCut 0.01 mm
+#/A2/physics/SetRegion PID
+#/A2/physics/RegionCut 0.01 mm
+#/A2/physics/SetRegion MWPC
+#/A2/physics/RegionCut 0.1 mm
+/A2/physics/SetRegion Active
+/A2/physics/RegionCut 0.01 mm
+
+/A2/generator/Mode 1
+/A2/generator/SetTMax 0. MeV
+/A2/generator/SetTMin 500. MeV
+/A2/generator/SetThetaMin 0. deg
+/A2/generator/SetThetaMax 0. deg
+/A2/generator/SetBeamXSigma 0. mm
+/A2/generator/SetBeamYSigma 0. mm
+#/A2/generator/SetTargetZ0 0. mm
+#/A2/generator/SetTargetThick 20. mm
+#/A2/generator/SetTargetRadius 1. cm
 
 ## Visual Aspects
 #/vis/viewer/set/sectionPlane on 0.1 0.0 0.0 cm 1.0 0.0 0.0
 #/vis/viewer/set/viewpointThetaPhi 70 20
-/vis/viewer/set/viewpointThetaPhi 90 0
-/vis/viewer/set/style wireframe
+#/vis/viewer/set/viewpointThetaPhi 90 0
+#/vis/viewer/set/style wireframe
 #/vis/viewer/set/style surface
 #/vis/scene/add/axes 0 0 0 1 cm
 
 #### Trajectories
-/vis/scene/add/trajectories smooth rich
-/vis/modeling/trajectories/create/drawByCharge
-/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
-/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 1
-/vis/scene/add/hits
-/vis/filtering/trajectories/create/particleFilter
-/vis/filtering/trajectories/particleFilter-0/add gamma
-/vis/filtering/trajectories/particleFilter-0/invert true
+#/vis/scene/add/trajectories smooth rich
+#/vis/modeling/trajectories/create/drawByCharge
+#/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 1
+#/vis/scene/add/hits
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/particleFilter-0/invert true
 
-/vis/scene/endOfEventAction accumulate
-/vis/scene/endOfRunAction accumulate
-/vis/viewer/set/autoRefresh true
-/gun/particle gamma
-/gun/energy 300 MeV
-/gun/direction 0. 0. 1.
-/gun/position 0 0 -100. cm
-/run/beamOn 1000
-/vis/viewer/flush
+/A2/event/setOutputFile out/final/pi+/pi+500000_0to500.root
+
+#/vis/scene/endOfEventAction accumulate
+#/vis/scene/endOfRunAction accumulate
+#/vis/viewer/set/autoRefresh true
+/gun/particle pi+
+#/gun/energy 150 MeV
+#/gun/direction 0. 0. 1.
+#/gun/position 0 0 -100. cm
+/run/beamOn 500000
+#/vis/viewer/flush
 
 

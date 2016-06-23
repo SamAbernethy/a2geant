@@ -29,5 +29,7 @@ private:
   A2SD* fScintillatorSD;
   G4int fNScintillators;
 
+  G4Region* fregionActive;
+
 };
 #endif

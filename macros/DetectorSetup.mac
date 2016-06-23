@@ -19,7 +19,7 @@
 /A2/det/setPIDZ 0. cm
 
 #set to 1 to not create the anode wires, 2 to create the anode wires
-/A2/det/useMWPC 1
+/A2/det/useMWPC 2
 
 ####Use Cherenkov?
 /A2/det/useCherenkov 0
@@ -41,6 +41,6 @@
 #/A2/det/targetMaterial A2_HeButanol
 #/A2/det/targetMaterial A2_HeDButanol
 /A2/det/targetMaterial G4_POLYSTYRENE
-/A2/det/targetMagneticCoils Solenoidal
+#/A2/det/targetMagneticCoils Solenoidal
 #/A2/det/targetMagneticCoils Saddle
-/A2/det/setTargetMagneticFieldMap wouter_field_map.dat
+#/A2/det/setTargetMagneticFieldMap wouter_field_map.dat

@@ -19,6 +19,8 @@
 
 A2PolarizedTarget::A2PolarizedTarget()
 {
+  fregionActive=NULL;
+  fregionActive = new G4Region("Active");
   fMagneticField = NULL;
 }
 A2PolarizedTarget::~A2PolarizedTarget()
@@ -156,6 +158,7 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
         SDman->AddNewDetector(fScintillatorSD);
      }
      PSSLogic->SetSensitiveDetector(fScintillatorSD);
+     fregionActive->AddRootLogicalVolume(fMyLogic);
 
      // Ten scintillator slices
      new G4PVPlacement(0, G4ThreeVector(0,0,PSS_start),PSSLogic,"PSS1",fMyLogic,false,1);
