@@ -26,9 +26,8 @@ private:
   A2MagneticField* fMagneticField;
   G4String fTypeMagneticCoils;
 
-  A2SD* fScintillatorSD;
-  G4int fNScintillators;
-
+  A2SD* fScintillatorSD; // sensitive detector for active target
+  G4int fNScintillators; // 10 in current active target
   G4Region* fregionActive;
 
 };

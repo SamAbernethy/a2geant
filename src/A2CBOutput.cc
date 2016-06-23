@@ -97,7 +97,7 @@ void A2CBOutput::SetBranches(){
   fTree->Branch("mposz",fmposz,"fmposz[fnmwpc]/F",basket);
   fTree->Branch("emwpc",femwpc,"femwpc[fnmwpc]/F",basket);
 
-  // scintillator branches
+  // active target scintillator branches
   fTree->Branch("scintillatorhits",&fscinthits,"fscinthits/I",basket);
   fTree->Branch("escint",fescint,"fescint[fscinthits]/F",basket);
   fTree->Branch("tscint",ftscint,"ftscint[fscinthits]/F",basket);
@@ -170,7 +170,7 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl){
 	fiveto[i]=hit->GetID();
       }
     }
-    // Scintillator hits (active target)
+    // Active target scintillator hits
     if(hc->GetName()=="A2SDHitsScintillatorSD"){
         fscinthits=hc_nhits;
         for(Int_t i=0; i<hc_nhits; i++) {
@@ -181,12 +181,6 @@ void A2CBOutput::WriteHit(G4HCofThisEvent* HitsColl){
         fscintposx[i]=(Float_t)hit->GetPos().getX();
         fscintposy[i]=(Float_t)hit->GetPos().getY();
         fscintposz[i]=(Float_t)hit->GetPos().getZ();
-        //G4cout << "Information about hit: " << G4endl;
-        //G4cout << "Energy: " << fescint[i] << G4endl;
-        //G4cout << "Time: " << ftscint[i] << G4endl;
-        //G4cout << "Which scintillator: " << fiscint[i] << G4endl;
-        //G4cout << "z location: " << fscintposz[i] << G4endl;
-        //G4cout << " " << G4endl;
         }
     }
     if(hc->GetName().contains("A2MWPCSD")){

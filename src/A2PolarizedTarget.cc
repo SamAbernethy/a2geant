@@ -15,7 +15,7 @@
 #include "G4Polycone.hh"
 #include "G4SDManager.hh"
 
-// Sam Abernethy, June 2016: Changed A2PolarizedTarget to include Active Target.
+// Sam Abernethy, June 2016: Changed A2PolarizedTarget.cc to include Active Target.
 
 A2PolarizedTarget::A2PolarizedTarget()
 {
@@ -88,7 +88,6 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
  G4VisAttributes* WhiteVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0)); // helium
  G4VisAttributes* YellowVisAtt= new G4VisAttributes(G4Colour(1.0,1.0, 0.0)); // plexiglass
  G4VisAttributes* LightGreyVisAtt= new G4VisAttributes(G4Colour(0.7,0.7,0.7)); // very light grey
- G4VisAttributes* BlackVisAtt= new G4VisAttributes(G4Colour(0.0,0.0,0.0)); // black
 
  //////////////////////////////////////////////////
  /// Active Target
@@ -231,64 +230,6 @@ G4VPhysicalVolume* A2PolarizedTarget::Construct(G4LogicalVolume *MotherLogic) {
      G4LogicalVolume* HeBeforeLogic = new G4LogicalVolume(HeBefore,fNistManager->FindOrBuildMaterial("A2_HeMix"),"HeBefore");
      HeBeforeLogic->SetVisAttributes(WhiteVisAtt);
      new G4PVPlacement(0,G4ThreeVector(0,0,PSS_start - l_PSS/2. - l_HeBefore/2.),HeBeforeLogic,"HeBefore",fMyLogic,false,1);
-
-     /* Oddly shaped caps (Not used in current active target design)
-     // Cone Cap
-     G4double l_CONECAP = 2*cm;
-     G4double r_CONECAP = 1.25*cm;
-     G4Cons* ConeCap = new G4Cons("Cone Cap",0,0.001*cm,0*cm,r_CONECAP,l_CONECAP/2.,0*deg,360*deg);
-     G4LogicalVolume* ConeCapLogic = new G4LogicalVolume(ConeCap, fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"), "ConeCap");
-     G4RotationMatrix cone_rotm = G4RotationMatrix();
-     cone_rotm.rotateY(180*deg);
-     G4ThreeVector conelocation = G4ThreeVector(0,3*cm,tubelocation+l_PGTube/2.+l_CONECAP/2.);
-     G4Transform3D cone_transform = G4Transform3D(cone_rotm,conelocation);
-     new G4PVPlacement(cone_transform,ConeCapLogic,"ConeCap",fMyLogic,false,1);
-     ConeCapLogic->SetVisAttributes(RedVisAtt);
-
-     // Solid Sphere Cap
-     G4double r_SPHERECAP = 1.25*cm;
-     G4Sphere* SphereCap = new G4Sphere("SphereCap",0,r_SPHERECAP,0*deg,180*deg,0*deg,180*deg);
-     G4LogicalVolume* SphereCapLogic = new G4LogicalVolume(SphereCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"SphereCap");
-     G4RotationMatrix sphere_rotm = G4RotationMatrix();
-     sphere_rotm.rotateX(90*deg);
-     G4ThreeVector spherelocation = G4ThreeVector(0,0,tubelocation+l_PGTube/2.);
-     G4Transform3D sphere_transform = G4Transform3D(sphere_rotm,spherelocation);
-     new G4PVPlacement(sphere_transform,SphereCapLogic,"SphereCap",fMyLogic,false,1);
-     SphereCapLogic->SetVisAttributes(RedVisAtt);
-
-     // Hollow Sphere Cap
-     G4double t_SPHERECAP = 0.25*cm;
-     G4Sphere* HollowSphereCap = new G4Sphere("HollowSphereCap",r_SPHERECAP-t_SPHERECAP,r_SPHERECAP,0*deg,180*deg,0*deg,180*deg);
-     G4LogicalVolume* HollowSphereCapLogic = new G4LogicalVolume(HollowSphereCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"HollowSphereCap");
-     G4RotationMatrix hollowsphere_rotm = G4RotationMatrix();
-     hollowsphere_rotm.rotateX(90*deg);
-     G4ThreeVector hollowspherelocation = G4ThreeVector(0,-3*cm,tubelocation+l_PGTube/2.);
-     G4Transform3D hollowsphere_transform = G4Transform3D(hollowsphere_rotm,hollowspherelocation);
-     new G4PVPlacement(hollowsphere_transform,HollowSphereCapLogic,"HollowSphereCap",fMyLogic,false,1);
-     HollowSphereCapLogic->SetVisAttributes(RedVisAtt);
-
-     // Paraboloid Cap
-     G4double l_paraboloid = 2*cm;
-     G4double paraboloidradius = 1.25*cm;
-     G4Paraboloid* ParaboloidCap = new G4Paraboloid("ParaboloidCap",l_paraboloid/2.,0,paraboloidradius);
-     G4LogicalVolume* ParaboloidCapLogic = new G4LogicalVolume(ParaboloidCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"ParaboloidCap");
-     G4RotationMatrix paraboloid_rotm = G4RotationMatrix();
-     paraboloid_rotm.rotateX(180*deg);
-     G4ThreeVector paraboloidlocation = G4ThreeVector(0, 6*cm, tubelocation+l_PGTube/2.+l_paraboloid/2.);
-     G4Transform3D paraboloid_transform = G4Transform3D(paraboloid_rotm, paraboloidlocation);
-     new G4PVPlacement(paraboloid_transform,ParaboloidCapLogic,"ParaboloidCap",fMyLogic,false,1);
-     ParaboloidCapLogic->SetVisAttributes(RedVisAtt);
-
-     // Polycone Cap
-     G4double numberoflayers = 5;
-     const G4double rInner[] = {0*mm,0*mm,0*mm,0*mm,0*mm};
-     const G4double rOuter[] = {1.25*cm,1.25*cm,1*cm,0.5*cm,0.1*cm};
-     const G4double zslices[] = {0*mm,7*mm,13*mm,19*mm,20*mm};
-     G4Polycone* PolyconeCap = new G4Polycone("PolyconeCap",0*deg,360*deg,numberoflayers,zslices,rInner,rOuter);
-     G4LogicalVolume* PolyconeCapLogic = new G4LogicalVolume(PolyconeCap,fNistManager->FindOrBuildMaterial("G4_PLEXIGLASS"),"PolyconeCap");
-     new G4PVPlacement(0,G4ThreeVector(0,-6*cm,tubelocation+l_PGTube/2.),PolyconeCapLogic,"PolyconeCap",fMyLogic,false,1);
-     PolyconeCapLogic->SetVisAttributes(RedVisAtt);
-*/
  }
 
  //////////////////////////////////////////////////

@@ -326,7 +326,7 @@ void A2DetectorConstruction::DefineMaterials()
   A2_DButanol->AddElement(Deuterium,10);
   A2_DButanol->AddElement(NistManager->FindOrBuildElement(8),1);
 
-  // Helium/DButanol Mixture (unknown density, copying A2_HeButanol) 60%/40%
+  // Helium/DButanol Mixture (unknown density, copying A2_HeButanol 60%/40%)
   G4Material* A2_HeDButanol = new G4Material("A2_HeDButanol",density=0.6*g/cm3,ncomponents=2);
   A2_HeDButanol->AddMaterial(A2_HeMix,fractionmass=0.0776);
   A2_HeDButanol->AddMaterial(A2_DButanol,fractionmass=0.9224);

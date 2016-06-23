@@ -62,7 +62,7 @@ protected:
   Int_t fscinthits; // number of hits in scintillators
   Float_t fescint[MAXSIZE_SCINTILLATORS]; // energy deposited in scintillators
   Float_t ftscint[MAXSIZE_SCINTILLATORS]; // time of hit in scintillators
-  Int_t fiscint[MAXSIZE_SCINTILLATORS]; // id number of the PID hits
+  Int_t fiscint[MAXSIZE_SCINTILLATORS]; // ID number of the scintillator hits
   Float_t fscintposx[MAXSIZE_SCINTILLATORS]; // x position
   Float_t fscintposy[MAXSIZE_SCINTILLATORS]; // y position
   Float_t fscintposz[MAXSIZE_SCINTILLATORS]; // z position

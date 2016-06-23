@@ -36,7 +36,7 @@
 #/A2/det/useTarget Solid
 #/A2/det/targetMaterial G4_Pb
 #/A2/det/targetMaterial G4_GRAPHITE
-#####Polarised target: Active (G4_POLYSTYRENE) or not (A2_HeButanol, A2_HeDButanol)
+#####Polarised target: Active (G4_POLYSTYRENE) or Inactive (A2_HeButanol, A2_HeDButanol)
 /A2/det/useTarget Polarized
 #/A2/det/targetMaterial A2_HeButanol
 #/A2/det/targetMaterial A2_HeDButanol
